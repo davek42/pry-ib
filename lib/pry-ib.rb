@@ -1,6 +1,8 @@
 #
 require 'fileutils'
 require "pry"
+
+require 'pry-ib/connection'
 require 'pry-ib/commands'
 
 module PryIb

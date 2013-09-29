@@ -12,6 +12,7 @@ describe PryIb::Command::PryIb do
       pry_eval('pry-ib').should =~ /Usage: pry-ib/
     end
   end
+
   describe "hellotest" do
     it "should say hello" do
       pry_eval('pry-ib hellotest').should == "helloworld\n"

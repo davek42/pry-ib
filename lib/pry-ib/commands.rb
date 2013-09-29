@@ -30,6 +30,10 @@ module PryIb
 
     end
 
+    def def_connect(cmd)
+      
+    end
+
     def subcommands(cmd)
       [:def_hellotest, 
       ].each { |m| __send__(m, cmd) }
