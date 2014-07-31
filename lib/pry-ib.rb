@@ -2,6 +2,7 @@
 require 'pry'
 require 'pry-ib/version'
 require 'pry-ib/commands'
+require 'pry-ib/connection'
 
 puts "Loading pry-ib 6"
 #Pry.config.prompt = proc { "IB> " }

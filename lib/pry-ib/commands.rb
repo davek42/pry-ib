@@ -15,5 +15,17 @@ module PryIb
             output.puts "ARGS: #{args.join(' ')}"
           end
         end
+
+
+        # connection
+        create_command "connection" do
+          description "connection -- create IB client connection"
+
+          def process
+            output.puts "--->"
+            output.puts "Host: #{PryIb::Util::TWS_HOST}"
+          end
+        end
+
     end
 end 
