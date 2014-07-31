@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Pry::Ib::VERSION
   spec.authors       = ["David Kinsfather"]
   spec.email         = ["david.kinsfather@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{This pry plugin provides a CLI to interact with the Interactive Brokers TWS API with the ib-ruby gem}
+  spec.summary       = %q{A CLI for trading with Interative Brokers}
   spec.homepage      = ""
   spec.license       = "MIT"
 
