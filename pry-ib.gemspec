@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'pry/ib/version'
+require 'pry-ib/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "pry-ib"
-  spec.version       = Pry::Ib::VERSION
+  spec.version       = PryIb::VERSION
   spec.authors       = ["David Kinsfather"]
   spec.email         = ["david.kinsfather@gmail.com"]
   spec.description   = %q{This pry plugin provides a CLI to interact with the Interactive Brokers TWS API with the ib-ruby gem}
