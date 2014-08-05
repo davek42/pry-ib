@@ -1,6 +1,6 @@
 #  General utilities or use with scripts
 module PryIb
-  module Util
+  class Connection
      #   tws_host = '10.0.1.3'  # cleopatra
      #   tws_port = 7496     # TWS demo port
      #   tws_port = 4001     # gateway port
@@ -12,16 +12,20 @@ module PryIb
                            host: TWS_HOST,
                            port: TWS_SERVICE_PORTS[:tws_demo],
                            service_name: :tws_demo
-       }
-                                
-    
-      def self.get_connection(  opts = {} )
+      }
+
+      def self.connection(service = :tws_gateway)
+        return @@conn unless @@conn.nil?
+        @@conn = make_connection( :service => :tws_gateway )
+      end
+
+      def self.make_connection(  opts = {} )
         options = DEFAULT_OPTIONS.merge(opts)
         port =  options[:port]
 
-        if not options[:service_name].nil? 
+        if not options[:service].nil? 
             port = TWS_SERVICE_PORTS[options[:service_name].to_sym]
-            if options[:service_name] == :tws_live
+            if options[:service] == :tws_live
               puts "************************************"
               puts "**** GO LIVE !!!"
               puts "************************************"
@@ -29,7 +33,7 @@ module PryIb
             end
         end
         # Connect to IB TWS.
-        puts "---- Connect: #{options[:service_name].to_s}. options:#{options.inspect}  port: #{port}"
+        puts "---- Connect: #{options[:service].to_s}. options:#{options.inspect}  port: #{port}"
         ib = IB::Connection.new( client_id:  options[:client_id], port: port, host: options[:host] )
 
         ib

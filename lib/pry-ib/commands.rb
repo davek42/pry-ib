@@ -19,11 +19,23 @@ module PryIb
 
         # connection
         create_command "connection" do
-          description "connection -- create IB client connection"
+          description "connection -- manage IB client connection"
+          def options(opt)
+            opt.on :s, :services, "list services"
+            opt.on :o, :host, "host"
+          end
 
           def process
-            output.puts "--->"
-            output.puts "Host: #{PryIb::Util::TWS_HOST}"
+            if opts.services?
+              PryIb::Connection::TWS_SERVICE_PORTS.each do |key, val|
+                output.puts "Service: #{key} Port:#{val}"
+              end
+
+            end
+            if opts.host?
+              output.puts "--->"
+              output.puts "Host: #{PryIb::Connection::TWS_HOST}"
+            end
           end
         end
 
