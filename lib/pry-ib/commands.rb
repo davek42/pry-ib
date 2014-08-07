@@ -57,6 +57,7 @@ module PryIb
               @service = :tws_gateway
             end
             output.puts "service: #{@service}"
+            PryIb::Connection::connection( @service )
           end
         end
 
