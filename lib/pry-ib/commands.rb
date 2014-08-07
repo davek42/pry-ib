@@ -1,7 +1,6 @@
 #require "pry/ib/version"
 
 module PryIb
-    # Your code goes here...
     def self.hello
       puts "Hello from pry-ib"
     end
@@ -16,12 +15,21 @@ module PryIb
           end
         end
 
+        create_command "alerts" do
+          description "Enable IB alerts"
+
+          def process
+            ib = PryIb::Connection::current
+            ib.subscribe(:Alert) { |msg| output.puts "Alert> #{msg.to_human}" }
+            output.puts "Alert Subcribe enabled"
+          end
+        end
 
         # connection
         create_command "connection" do
           description "connection -- manage IB client connection"
           def setup
-            @service = :tws_demo
+            @service = nil
           end
 
           def options(opt)
@@ -45,6 +53,8 @@ module PryIb
               output.puts "Host: #{PryIb::Connection::TWS_HOST}"
               return
             end
+
+            # make new service connection
             if opts.service?
               @service = opts[:service].to_sym
               output.puts "Set service: #{@service}"
@@ -56,8 +66,20 @@ module PryIb
             elsif opts.gateway?
               @service = :tws_gateway
             end
-            output.puts "service: #{@service}"
-            PryIb::Connection::connection( @service )
+
+            if @service
+              output.puts "Set service: #{@service}"
+              return PryIb::Connection::connection( @service )
+            end
+
+            # return current connection
+            ib = PryIb::Connection::current
+            if ib
+              output.puts "Use current connection"
+            else
+              output.puts "No current connection"
+            end
+            return ib 
           end
         end
 

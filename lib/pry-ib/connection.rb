@@ -6,7 +6,7 @@ module PryIb
      TWS_HOST='127.0.0.1'
 
      #   tws_port = 7442     # TWS live port
-     #   tws_port = 7496     # TWS demo port
+     #   tws_port = 7496     # TWS demo/test port
      #   tws_port = 4001     # gateway port
      TWS_SERVICE_PORTS={ tws_live: 7442, tws_demo: 7496, tws_gateway: 4001 }
      DEFAULT_OPTIONS = {  client_id: nil,
@@ -16,8 +16,13 @@ module PryIb
       }
 
       @@conn = nil  # IB connection
+      @@service = nil
 
-      def self.connection(service = :tws_gateway)
+      def self.current
+        connection(@@service)
+      end
+
+      def self.connection(service)
         return @@conn unless @@conn.nil?
         @@conn = make_connection( :service => service )
       end
@@ -29,8 +34,10 @@ module PryIb
         raise "No host opt. #{opts.inspect}" if options[:host].nil? 
         puts "> make_connection: #{opts.inspect}"
 
-        port = TWS_SERVICE_PORTS[options[:service].to_sym]
+        @@service = options[:service].to_sym
+        port = TWS_SERVICE_PORTS[@@service]
         options[:port] = port
+        
         if options[:service] == :tws_live
           puts "************************************"
           puts "**** GO LIVE !!!"
