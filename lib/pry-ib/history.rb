@@ -16,7 +16,7 @@ module PryIb
       @ib = ib
       @quotes = {}
       @market = {}
-      @request_id = 201
+      @request_id = PryIb::next_request_id
     end
 
     def avg(list)
@@ -28,7 +28,7 @@ module PryIb
       average
     end
 
-  ###
+    ###
     def quote(symbol,duration='1 D', bar_size='5 mins',stats_only=false)
       @contract =  Security.make_stock_contract(symbol)
       log("Quote for:#{@contract.inspect} duration:#{duration} bar_size=#{bar_size}, stats_only:#{stats_only}")
@@ -87,6 +87,7 @@ module PryIb
       max_high = 0
       max_low  = 999999
       avg_close = 0
+      avg_vol = 0
       @quotes.each_pair do |id, bars|
         log ">>>--------------"
         log "ID: #{id} Desc: #{@market[id].description}"
@@ -97,12 +98,14 @@ module PryIb
           max_low  = bar.low if bar.low < max_low   
         end
         avg_close = avg( bars.collect{|b| b[:low]} ) 
+        avg_vol   = avg( bars.collect{|b| b[:volume]} ) 
       end
 
       log "---------------------------"
       log "Max High: #{max_high}"
       log "Max Low : #{max_low}"
       log "Avg Close: #{"%6.2f" % avg_close}"
+      log "Avg Vol: #{"%6.2f" % avg_vol}"
       @quotes
     end
 

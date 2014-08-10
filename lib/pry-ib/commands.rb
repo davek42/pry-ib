@@ -110,6 +110,76 @@ module PryIb
           end
         end
 
+
+        create_command "bracket" do
+          description %{ Execute Bracket order
+          Example: 
+             bracket --quantity 200 --price 42.10 --stop 40.00 --profit 44.00 -l -type LMT
+          }
+          command_options(
+            :keep_retval => true
+          )
+
+          def setup
+            @quantity = 100
+            @order_price = nil
+            @stop_price = nil
+            @profit_price = nil
+            @order_type = 'LMT'
+            @direction = :long
+
+          end
+
+          def options(opt)
+            opt.on :quantity=,'set quantity (default: 100)'
+            opt.on :price=,   'set order limit price'
+            opt.on :stop=,    'set stop price'
+            opt.on :profit=,  'set profit price'
+            opt.on :type=,    'set order type  (MKT, LMT, STP) default LMT'
+            opt.on :s,:short, 'use short direction'
+            opt.on :l,:long,  'use long direction'
+            opt.on :c,:create,  'Create bracket order but do not execute'
+          end
+
+          def process
+            raise Pry::CommandError, "Need a least one symbol" if opts.to_hash.size == 0 && args.size == 0
+            symbol = args.first
+            ib = PryIb::Connection::current
+            output.puts "Bracket: #{symbol}"
+
+            if opts.quantity?
+              @quantity = opts[:quantity].to_i
+              output.puts "Set quantity: #{@quantity}"
+            end
+            if opts.price?
+              @order_price = opts[:price].to_f
+              output.puts "Set order_price: #{@order_price}"
+            end
+            if opts.stop?
+              @stop_price = opts[:stop].to_f
+              output.puts "Set stop_price: #{@stop_price}"
+            end
+            if opts.profit?
+              @profit_price = opts[:profit].to_f
+              output.puts "Set profit_price: #{@profit_price}"
+            end
+            if opts.type?
+              @order_type = opts[:type]
+              output.puts "Set order_type: #{@order_type}"
+            end
+
+
+            @bracket = PryIb::BracketOrder.new(ib,symbol)
+            @bracket.setup( @quantity, @order_price, @stop_price,
+                             @profit_price, @order_type, @direction )
+
+            @bracket.send_order unless opts.create?
+
+            @bracket
+          end
+        end
+
+
         # connection
         create_command "connection" do
           description "connection -- manage IB client connection"

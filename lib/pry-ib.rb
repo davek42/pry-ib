@@ -6,14 +6,25 @@ require 'pry-ib/connection'
 require 'pry-ib/tick'
 require 'pry-ib/security'
 require 'pry-ib/history'
+require 'pry-ib/bracket'
 require 'pry-ib/util/time_util'
 
 
 
 module PryIb
+  @@request_id = 100
   def self.log(message)
     Pry.output.puts(">> #{ message}")
   end
+
+  def self.request_id
+    @@request_id
+  end
+
+  def self.next_request_id
+    @@request_id += 1
+  end
+
 end
 
 
