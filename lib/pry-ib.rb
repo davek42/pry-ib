@@ -12,7 +12,7 @@ require 'pry-ib/util/time_util'
 
 module PryIb
   def self.log(message)
-    Pry::output.puts(">> #{ message}")
+    Pry.output.puts(">> #{ message}")
   end
 end
 

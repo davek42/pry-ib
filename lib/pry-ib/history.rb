@@ -5,6 +5,13 @@ require 'ib-ruby'
 module PryIb
   class History
 
+    DURATIONS = { sec1: '1 S', 
+                  day1: '1 D',
+                  week1: '1 W',
+                  month1: '1 M',
+                  year1: '1 Y',
+    }
+
     def initialize( ib )
       @ib = ib
       @quotes = {}
@@ -22,21 +29,24 @@ module PryIb
     end
 
   ###
-    def quote(symbol)
+    def quote(symbol,duration='1 D', bar_size='5 mins',stats_only=false)
       @contract =  Security.make_stock_contract(symbol)
-      log("Quote for:#{@contract.inspect}")
+      log("Quote for:#{@contract.inspect} duration:#{duration} bar_size=#{bar_size}, stats_only:#{stats_only}")
       @market = { @request_id => @contract }
       @market.each_key { |key| @quotes[key] = [] }
 
+      # Ensure we get alerts
+      @ib.subscribe(:Alert) { |msg| log "ALERT: #{msg.to_human}" }
+
+      # Subscribe to historical quote data
       @ib.subscribe(IB::Messages::Incoming::HistoricalData) do |msg|
         log "ID: #{msg.request_id} " + @market[msg.request_id].description + ": #{msg.count} items:"
         msg.results.each do |entry| 
-          log "Request_id:#{msg.request_id}t
-          Entry  #{entry.inspect}" 
-          log "Quotes:#{@quotes.inspect}"
+          #log "Request_id:#{msg.request_id}t
           @quotes[msg.request_id] << entry
         end
         @last_msg_time = Time.now.to_i
+        #log "Quotes:#{@quotes.inspect}"
       end
       log "-- After subscribe"
 
@@ -53,8 +63,8 @@ module PryIb
                             :request_id => id,
                             :contract => contract,
                             :end_date_time => target_trade_time,
-                            :duration => '1 D', #    ?
-                            :bar_size => '5 mins', #  IB::BAR_SIZES.key(:hour)?
+                            :duration => duration, #'1 D', #    ?
+                            :bar_size => bar_size,  #'5 mins', #  IB::BAR_SIZES.key(:hour)?
                             :what_to_show => :trades,
                             :use_rth => 1,
                             :format_date => 1)
@@ -75,14 +85,14 @@ module PryIb
 
 
       max_high = 0
-      max_low  = 0
+      max_low  = 999999
       avg_close = 0
       @quotes.each_pair do |id, bars|
         log ">>>--------------"
         log "ID: #{id} Desc: #{@market[id].description}"
         #log "Quotes: #{quotes.inspect}"
         bars.each do |bar|
-          log ">> BAR: #{bar.to_s}"
+          log ">> BAR: #{bar.to_s}" unless stats_only
           max_high = bar.high if bar.high > max_high
           max_low  = bar.low if bar.low < max_low   
         end
