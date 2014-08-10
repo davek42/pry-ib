@@ -10,7 +10,6 @@ module PryIb
           description "DK - Echo the input: echo [ARGS]"
 
           def process
-            output.puts "--->"
             output.puts "ARGS: #{args.join(' ')}"
           end
         end
@@ -33,8 +32,22 @@ module PryIb
             symbol = args.first
             ib = PryIb::Connection::current
             output.puts "Tick: #{symbol}"
-            tick = PryIb::Tick.new(ib, output)
+            tick = PryIb::Tick.new(ib)
             tick.tick(symbol)
+
+          end
+        end
+
+        create_command "history" do
+          description "Get quote history"
+
+          def process
+            raise Pry::CommandError, "Need a least one symbol" if args.size == 0
+            symbol = args.first
+            ib = PryIb::Connection::current
+            output.puts "Quote: #{symbol}"
+            hist = PryIb::History.new(ib)
+            hist.quote(symbol)
 
           end
         end

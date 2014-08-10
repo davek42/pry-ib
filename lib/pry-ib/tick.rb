@@ -5,18 +5,13 @@ require 'ib-ruby'
 module PryIb
   class Tick
 
-    def initialize( ib, out = nil)
+    def initialize( ib )
       @ib = ib
-      @ouput = out
     end
 
-    def log(message)
-      if @output
-        @output.puts(message)
-      else
-        puts(message)
-      end
-    end
+#    def log(message)
+#      Pry::output.puts(message)
+#   end
 
     def displayTickMessage( message )
       
