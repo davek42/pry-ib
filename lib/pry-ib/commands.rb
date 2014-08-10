@@ -38,12 +38,17 @@ module PryIb
           end
         end
 
-        create_command "history" do
+        create_command "quote" do
           description "Get quote history"
+          command_options(
+            :keep_retval => true
+          )
+
           def setup
             @duration = '1 D'
             @bar_size = '5 mins'
             @stats_only = false
+            @quotes = {}
           end
           def options(opt)
             opt.on :i, :info, 'show bar options'
@@ -100,8 +105,8 @@ module PryIb
             ib = PryIb::Connection::current
             output.puts "Quote: #{symbol}"
             hist = PryIb::History.new(ib)
-            hist.quote(symbol,@duration,@bar_size,@stats_only)
-
+            @quotes = hist.quote(symbol,@duration,@bar_size,@stats_only)
+            @quotes
           end
         end
 

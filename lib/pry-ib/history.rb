@@ -101,10 +101,9 @@ module PryIb
 
       log "---------------------------"
       log "Max High: #{max_high}"
-    log "Max Low : #{max_low}"
-    log "Avg Close: #{"%6.2f" % avg_close}"
-
-
+      log "Max Low : #{max_low}"
+      log "Avg Close: #{"%6.2f" % avg_close}"
+      @quotes
     end
 
   end
