@@ -1,4 +1,4 @@
-#require "pry/ib/version"
+
 
 module PryIb
     def self.hello
@@ -22,6 +22,20 @@ module PryIb
             ib = PryIb::Connection::current
             ib.subscribe(:Alert) { |msg| output.puts "Alert> #{msg.to_human}" }
             output.puts "Alert Subcribe enabled"
+          end
+        end
+
+        create_command "tick" do
+          description "Get Tick quote"
+
+          def process
+            raise Pry::CommandError, "Need a least one symbol" if args.size == 0
+            symbol = args.first
+            ib = PryIb::Connection::current
+            output.puts "Tick: #{symbol}"
+            tick = PryIb::Tick.new(ib, output)
+            tick.tick(symbol)
+
           end
         end
 
