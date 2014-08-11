@@ -24,6 +24,24 @@ module PryIb
           end
         end
 
+        create_command "order" do
+          description "Get order status"
+          def options(opt)
+            opt.on :x,:cancel, 'cancel ALL orders'
+            opt.on :s, :show, 'show open orders (default)'
+          end
+
+          def process
+            ib = PryIb::Connection::current
+            order = PryIb::Order.new(ib)
+            if opts.cancel?
+              order.cancel_orders
+              return
+            end
+            order.list_orders
+          end
+        end
+
         create_command "tick" do
           description "Get Tick quote"
 
@@ -134,7 +152,7 @@ module PryIb
             opt.on :quantity=,'set quantity (default: 100)'
             opt.on :price=,   'set order limit price'
             opt.on :stop=,    'set stop price'
-            opt.on :profit=,  'set profit price'
+            opt.on :profit=,  'set profit target price'
             opt.on :type=,    'set order type  (MKT, LMT, STP) default LMT'
             opt.on :s,:short, 'use short direction'
             opt.on :l,:long,  'use long direction'
