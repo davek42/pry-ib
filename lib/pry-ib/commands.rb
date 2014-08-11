@@ -208,7 +208,10 @@ module PryIb
 
           def options(opt)
             opt.on :s, :show, "show services"
+            opt.on :c, :close, "close current connection"
             opt.on :o, :host, "host"
+            opt.on :b, :subs, "subscribers"
+            opt.on :u, :unsub=, "unsubscribe id"
             opt.on :service=, 'set Service name'
             opt.on :l, :live, "use Live Service"
             opt.on :t, :test, :demo, "use Demo (Test) Service"
@@ -217,6 +220,7 @@ module PryIb
 
           def process
             if opts.show?
+              output.puts "Current Service:#{ PryIb::Connection::service}"
               PryIb::Connection::TWS_SERVICE_PORTS.each do |key, val|
                 output.puts "Service: #{key} Port:#{val}"
               end
@@ -225,6 +229,23 @@ module PryIb
             if opts.host?
               output.puts "--->"
               output.puts "Host: #{PryIb::Connection::TWS_HOST}"
+              return
+            end
+            if opts.close?
+              output.puts "--->"
+              output.puts "Close: #{PryIb::Connection::service}"
+              PryIb::Connection::close
+              return
+            end
+            if opts.subs?
+              output.puts "--->"
+              PryIb::Connection::subscribers
+              return
+            end
+            if opts.unsub?
+              @unsub_id = opts[:unsub].to_i
+              output.puts "Unsuscribe #{@unsub_id}"
+              PryIb::Connection::unsubscribe @unsub_id
               return
             end
 

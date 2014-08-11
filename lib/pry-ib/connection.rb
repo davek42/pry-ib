@@ -18,6 +18,10 @@ module PryIb
       @@conn = nil  # IB connection
       @@service = nil
 
+      def self.service
+        @@service
+      end
+
       def self.current
         connection(@@service)
       end
@@ -32,16 +36,16 @@ module PryIb
         raise "No service opt. #{opts.inspect}" if options[:service].nil? 
         raise "No port opt. #{opts.inspect}" if options[:port].nil? 
         raise "No host opt. #{opts.inspect}" if options[:host].nil? 
-        puts "> make_connection: #{opts.inspect}"
+        log "> make_connection: #{opts.inspect}"
 
         @@service = options[:service].to_sym
         port = TWS_SERVICE_PORTS[@@service]
         options[:port] = port
         
         if options[:service] == :tws_live
-          puts "************************************"
-          puts "**** GO LIVE !!!"
-          puts "************************************"
+          log "************************************"
+          log "**** GO LIVE !!!"
+          log "************************************"
           system('echo -e "\a\a"')
         end
         # Connect to IB TWS.
@@ -52,14 +56,43 @@ module PryIb
 
       def self.new_connection( options )
         begin
-          @@conn.close if @conn
+          @@conn.close if @@conn
           # Connect to IB TWS.
-          puts "---- Connect: #{options[:service].to_s}. options:#{options.inspect}  "
+          log "---- Connect: #{options[:service].to_s}. options:#{options.inspect}  "
           @@conn = IB::Connection.new( client_id:  options[:client_id],  host: options[:host], port: options[:port])
         rescue => err
-          puts "Failed to connect #{options[:service].to_s}. options:#{options.inspect}  Error:#{err.message} "
+          log "Failed to connect #{options[:service].to_s}. options:#{options.inspect}  Error:#{err.message} "
           raise err
         end
+      end
+
+      def self.close
+        if @@conn
+          @@conn.close 
+          @@conn = nil
+          @@service = nil
+        end
+
+      end
+
+      def self.subscribers
+       if @@conn.nil?
+        log "No connection. No subscribers"
+        return
+       end
+       log "Conn:" % @@conn.class.name
+       @@conn.subscribers.each do |sub|
+         log "Sub: #{sub.inspect}"
+       end
+      end
+
+      def self.unsubscribe(id)
+       if @@conn.nil?
+        log "No connection. No subscribers"
+        return
+       end
+       removed = @@conn.unsubscribe id
+       log "UnSub: #{removed.inspect}"
       end
 
 
