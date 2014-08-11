@@ -6,16 +6,10 @@ module PryIb
     end
 
     Commands = Pry::CommandSet.new do
-        create_command "echo" do
-          description "DK - Echo the input: echo [ARGS]"
-
-          def process
-            output.puts "ARGS: #{args.join(' ')}"
-          end
-        end
 
         create_command "alerts" do
           description "Enable IB alerts"
+          group 'pry-ib'
 
           def process
             ib = PryIb::Connection::current
@@ -26,6 +20,7 @@ module PryIb
 
         create_command "order" do
           description "Get order status"
+          group 'pry-ib'
           def options(opt)
             opt.on :x,:cancel, 'cancel ALL orders'
             opt.on :s, :show, 'show open orders (default)'
@@ -44,6 +39,7 @@ module PryIb
 
         create_command "tick" do
           description "Get Tick quote"
+          group 'pry-ib'
 
           def process
             raise Pry::CommandError, "Need a least one symbol" if args.size == 0
@@ -58,6 +54,7 @@ module PryIb
 
         create_command "quote" do
           description "Get quote history"
+          group 'pry-ib'
           command_options(
             :keep_retval => true
           )
@@ -130,10 +127,13 @@ module PryIb
 
 
         create_command "bracket" do
-          description %{ Execute Bracket order
-          Example: 
-             bracket --quantity 200 --price 42.10 --stop 40.00 --profit 44.00 -l -type LMT
-          }
+          description 'Execute Bracket order'
+          banner <<-BANNER
+            Usage: bracket [ --quantiy <amount> ] [ --price <entry price> ] [ --stop <stop price> ][ --profit <profit price> ] [ --type <order type>] [ -l | -s ] <symbol>
+            Example: 
+              bracket --quantity 200 --price 42.10 --stop 40.00 --profit 44.00 -l -type LMT AAPL
+          BANNER
+          group 'pry-ib'
           command_options(
             :keep_retval => true
           )
@@ -201,6 +201,7 @@ module PryIb
         # connection
         create_command "connection" do
           description "connection -- manage IB client connection"
+          group 'pry-ib'
           def setup
             @service = nil
           end
