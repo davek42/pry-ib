@@ -14,9 +14,10 @@ module PryIb
 
     def initialize( ib )
       @ib = ib
-      @quotes = {}
       @market = {}
       @request_id = PryIb::next_request_id
+      @quotes = { @request_id => [] }
+      log "Quote init. ID #{@request_id}"
     end
 
     def avg(list)
@@ -33,18 +34,19 @@ module PryIb
       @contract =  Security.make_stock_contract(symbol)
       log("Quote for:#{@contract.inspect} duration:#{duration} bar_size=#{bar_size}, stats_only:#{stats_only}")
       @market = { @request_id => @contract }
-      @market.each_key { |key| @quotes[key] = [] }
 
       # Ensure we get alerts
       @ib.subscribe(:Alert) { |msg| log "ALERT: #{msg.to_human}" }
 
       # Subscribe to historical quote data
       @ib.subscribe(IB::Messages::Incoming::HistoricalData) do |msg|
-        log "ID: #{msg.request_id} " + @market[msg.request_id].description + ": #{msg.count} items:"
+        quote_list = []
+        log "ID: #{msg.request_id}: #{msg.count} items:"
         msg.results.each do |entry| 
           #log "Request_id:#{msg.request_id}t
-          @quotes[msg.request_id] << entry
+          quote_list << entry
         end
+        @quotes[msg.request_id] = quote_list
         @last_msg_time = Time.now.to_i
         #log "Quotes:#{@quotes.inspect}"
       end

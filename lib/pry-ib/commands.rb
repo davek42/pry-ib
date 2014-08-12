@@ -63,7 +63,7 @@ module PryIb
             @duration = '1 D'
             @bar_size = '5 mins'
             @stats_only = false
-            @quotes = {}
+            @quote_hist = {}
           end
           def options(opt)
             opt.on :i, :info, 'show bar options'
@@ -120,8 +120,8 @@ module PryIb
             ib = PryIb::Connection::current
             output.puts "Quote: #{symbol}"
             hist = PryIb::History.new(ib)
-            @quotes = hist.quote(symbol,@duration,@bar_size,@stats_only)
-            @quotes
+            @quote_hist = hist.quote(symbol,@duration,@bar_size,@stats_only)
+            (@stats_only) ? nil : @quote_hist
           end
         end
 
@@ -206,6 +206,11 @@ module PryIb
             @service = nil
           end
 
+          def set_prompt(name="")
+            #Pry.config.prompt = proc { |obj, nest_level, _| "IB(#{name}: #{obj}(#{nest_level})> " }
+            _pry_.prompt = proc { |obj, nest_level, _| "IB(#{name}): #{obj}(#{nest_level})> " }
+          end
+
           def options(opt)
             opt.on :s, :show, "show services"
             opt.on :c, :close, "close current connection"
@@ -234,6 +239,7 @@ module PryIb
             if opts.close?
               output.puts "--->"
               output.puts "Close: #{PryIb::Connection::service}"
+              set_prompt ""
               PryIb::Connection::close
               return
             end
@@ -256,10 +262,13 @@ module PryIb
             elsif opts.live?
               output.puts "Live service "
               @service = :tws_live
+              set_prompt "LIVE:"
             elsif opts.test? || opts.demo?
               @service = :tws_demo
+              set_prompt "TEST:"
             elsif opts.gateway?
               @service = :tws_gateway
+              set_prompt "GATE:"
             end
 
             if @service
