@@ -52,6 +52,20 @@ module PryIb
           end
         end
 
+        create_command "real" do
+          description "Get Real Time quote"
+          group 'pry-ib'
+
+          def process
+            raise Pry::CommandError, "Need a least one symbol" if args.size == 0
+            symbol = args.first
+            ib = PryIb::Connection::current
+            output.puts "Tick: #{symbol}"
+            real = PryIb::RealTimeQuote.new(ib)
+            real.quote(symbol)
+          end
+        end
+
         create_command "quote" do
           description "Get quote history"
           group 'pry-ib'
@@ -262,13 +276,13 @@ module PryIb
             elsif opts.live?
               output.puts "Live service "
               @service = :tws_live
-              set_prompt "LIVE:"
+              set_prompt "LIVE"
             elsif opts.test? || opts.demo?
               @service = :tws_demo
-              set_prompt "TEST:"
+              set_prompt "TEST"
             elsif opts.gateway?
               @service = :tws_gateway
-              set_prompt "GATE:"
+              set_prompt "GATE"
             end
 
             if @service
