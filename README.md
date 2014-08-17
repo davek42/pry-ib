@@ -25,7 +25,9 @@ Gateways reside on the same host. Currently, up to 3 separate are
 supported known as "live", "test", "gateway". However, they can be
 either TWS or Gateway are just arbitray names given to the ports
 
-```
+```ruby
+# File: ~/.pryrc
+
 Pry.config.ib_host = '127.0.0.1'
 Pry.config.ib_live_port = 7442
 Pry.config.ib_test_port = 7496
@@ -33,6 +35,21 @@ Pry.config.ib_gateway_port = 4001
 ```
 
 ## Usage
+
+```
+> bundle exec pry
+Service Ports: {:tws_live=>7442, :tws_test=>7496, :tws_gateway=>4001}
+IB: main(0)> help pry-ib
+pry-ib
+  alerts             Enable IB alerts
+  bracket            Execute Bracket order
+  connection         connection -- manage IB client connection
+  order              Get order status
+  quote              Get quote history
+  real               Get Real Time quote
+  tick               Get Tick quote
+IB: main(0)>
+```
 
 TODO: Write usage instructions here
 
