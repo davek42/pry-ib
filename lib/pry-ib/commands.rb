@@ -7,7 +7,7 @@ module PryIb
 
     Commands = Pry::CommandSet.new do
 
-        create_command "alerts" do
+        create_command "subs" do
           description "Enable IB alerts"
           group 'pry-ib'
 
@@ -49,6 +49,19 @@ module PryIb
             tick = PryIb::Tick.new(ib)
             tick.tick(symbol)
 
+          end
+        end
+
+        create_command "alert" do
+          description "Setup an alert"
+          group 'pry-ib'
+
+          def process
+            raise Pry::CommandError, "Need a least one symbol" if args.size == 0
+            symbol = args.first
+            ib = PryIb::Connection::current
+            alert = PryIb::Alert.new(ib)
+            alert.alert(symbol)
           end
         end
 

@@ -9,6 +9,7 @@ require 'pry-ib/history'
 require 'pry-ib/order'
 require 'pry-ib/bracket'
 require 'pry-ib/real_time_quote'
+require 'pry-ib/alert'
 require 'pry-ib/util/time_util'
 
 
