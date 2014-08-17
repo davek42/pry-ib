@@ -25,10 +25,12 @@ Gateways reside on the same host. Currently, up to 3 separate are
 supported known as "live", "test", "gateway". However, they can be
 either TWS or Gateway are just arbitray names given to the ports
 
+```
 Pry.config.ib_host = '127.0.0.1'
 Pry.config.ib_live_port = 7442
 Pry.config.ib_test_port = 7496
 Pry.config.ib_gateway_port = 4001
+```
 
 ## Usage
 
@@ -45,8 +47,8 @@ TODO: Write usage instructions here
 
 ## See Also
 
-https://www.interactivebrokers.com/en/index.php?f=5041
+[IB API](https://www.interactivebrokers.com/en/index.php?f=5041)
 
-https://github.com/ib-ruby/ib-ruby
+[ib-ruby project](https://github.com/ib-ruby/ib-ruby)
 
 
