@@ -49,6 +49,23 @@ pry-ib
   real               Get Real Time quote
   tick               Get Tick quote
 IB: main(0)>
+IB(): main(0)> connection -h
+connection -- manage IB client connection
+    -s, --show         show services
+    -c, --close        close current connection
+    -o, --host         host
+    -b, --subs         subscribers
+    -u, --unsub        unsubscribe id
+        --service      set Service name
+    -l, --live         use Live Service
+    -t, --test         use Test Service
+    -g, --gateway      use Gateway Service
+    -h, --help         Show this message.
+IB(): main(0)>
+IB(): main(0)> connection --test
+15:35:51.086 ---- Connect: tws_test. options:{:client_id=>nil, :host=>"127.0.0.1", :port=>7496, :service=>:tws_test}
+15:35:51.089 Connected to server, ver: 71, connection time: 2014-08-17 15:35:51 -0700 local, 20140817 15:35:50 PST remote.
+IB(TEST): main(0)>
 ```
 
 TODO: Write usage instructions here

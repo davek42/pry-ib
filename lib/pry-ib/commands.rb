@@ -286,7 +286,7 @@ module PryIb
             end
 
             if @service
-              output.puts "Set service: #{@service}"
+              #output.puts "Set service: #{@service}"
               return PryIb::Connection::connection( @service )
             end
 

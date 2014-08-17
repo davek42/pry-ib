@@ -28,7 +28,7 @@ module PryIb
         SERVICE_PORTS[:tws_live] = Pry.config.ib_live_port 
         SERVICE_PORTS[:tws_test] = Pry.config.ib_test_port 
         SERVICE_PORTS[:tws_gateway] = Pry.config.ib_gateway_port 
-        puts "Service Ports: #{SERVICE_PORTS.inspect}"
+        #log "Service Ports: #{SERVICE_PORTS.inspect}"
       end
 
       def self.service
@@ -49,7 +49,7 @@ module PryIb
         raise "No service opt. #{opts.inspect}" if options[:service].nil? 
         raise "No port opt. #{opts.inspect}" if options[:port].nil? 
         raise "No host opt. #{opts.inspect}" if options[:host].nil? 
-        log "> make_connection: #{opts.inspect}"
+        #log "> make_connection: #{opts.inspect}"
 
         @@service = options[:service].to_sym
         port = SERVICE_PORTS[@@service]
