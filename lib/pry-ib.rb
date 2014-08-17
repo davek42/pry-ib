@@ -29,8 +29,14 @@ module PryIb
 
 end
 
+# configuration
+PryIb::Connection::setup
 
-puts "Loading pry-ib 7"
+# Startup sanity check
+Pry.config.ib_test ||= false
+puts "Loading pry-ib 8;  ib_test:#{Pry.config.ib_test}"
+
+
 #Pry.config.prompt = proc { "IB> " }
 Pry.config.prompt = proc { |obj, nest_level, _| "IB: #{obj}(#{nest_level})> " }
 #Pry.config.color = true

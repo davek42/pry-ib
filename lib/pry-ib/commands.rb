@@ -233,7 +233,7 @@ module PryIb
             opt.on :u, :unsub=, "unsubscribe id"
             opt.on :service=, 'set Service name'
             opt.on :l, :live, "use Live Service"
-            opt.on :t, :test, :demo, "use Demo (Test) Service"
+            opt.on :t, :test,  "use Test Service"
             opt.on :g,:gateway, "use Gateway Service"
           end
 
@@ -277,8 +277,8 @@ module PryIb
               output.puts "Live service "
               @service = :tws_live
               set_prompt "LIVE"
-            elsif opts.test? || opts.demo?
-              @service = :tws_demo
+            elsif opts.test? || opts.test?
+              @service = :tws_test
               set_prompt "TEST"
             elsif opts.gateway?
               @service = :tws_gateway

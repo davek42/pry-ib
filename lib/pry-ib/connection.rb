@@ -3,20 +3,33 @@ require 'ib-ruby'
 
 module PryIb
   class Connection
-     TWS_HOST='127.0.0.1'
+     @@host='127.0.0.1'
 
      #   tws_port = 7442     # TWS live port
      #   tws_port = 7496     # TWS demo/test port
      #   tws_port = 4001     # gateway port
-     TWS_SERVICE_PORTS={ tws_live: 7442, tws_demo: 7496, tws_gateway: 4001 }
+     SERVICE_PORTS={ tws_live: 7442, tws_test: 7496, tws_gateway: 4001 }
      DEFAULT_OPTIONS = {  client_id: nil,
-                           host:    TWS_HOST,
-                           port:    TWS_SERVICE_PORTS[:tws_demo],
-                           service: :tws_demo
+                           host:    @@host,
+                           port:    SERVICE_PORTS[:tws_test],
+                           service: :tws_test
       }
 
       @@conn = nil  # IB connection
       @@service = nil
+
+      def self.setup
+        Pry.config.ib_host ||= '127.0.0.1'
+        Pry.config.ib_live_port ||= 7442
+        Pry.config.ib_test_port ||= 7496
+        Pry.config.ib_gateway_port ||= 4001
+
+        @@host = Pry.config.ib_host 
+        SERVICE_PORTS[:tws_live] = Pry.config.ib_live_port 
+        SERVICE_PORTS[:tws_test] = Pry.config.ib_test_port 
+        SERVICE_PORTS[:tws_gateway] = Pry.config.ib_gateway_port 
+        puts "Service Ports: #{SERVICE_PORTS.inspect}"
+      end
 
       def self.service
         @@service
@@ -39,7 +52,7 @@ module PryIb
         log "> make_connection: #{opts.inspect}"
 
         @@service = options[:service].to_sym
-        port = TWS_SERVICE_PORTS[@@service]
+        port = SERVICE_PORTS[@@service]
         options[:port] = port
         
         if options[:service] == :tws_live
