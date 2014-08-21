@@ -60,11 +60,21 @@ module PryIb
           BANNER
           group 'pry-ib'
 
+          def options(opt)
+            opt.on :l,:list, 'list accounts'
+          end
+
           def process
-            raise Pry::CommandError, "Need a least one symbol" if args.size == 0
-            code = args.first || ''
             ib = PryIb::Connection::current
             account = PryIb::Account.new(ib)
+
+            if opts.list?
+              account.list
+              return
+            end
+
+            raise Pry::CommandError, "Need a least one symbol" if args.size == 0
+            code = args.first || ''
             account.info(code)
           end
         end
