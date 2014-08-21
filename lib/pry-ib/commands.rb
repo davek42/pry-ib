@@ -234,6 +234,7 @@ module PryIb
             opt.on :stop=,    'set stop price'
             opt.on :profit=,  'set profit target price'
             opt.on :type=,    'set order type  (MKT, LMT, STP) default LMT'
+            opt.on :account=, 'set account'
             opt.on :s,:short, 'use short direction'
             opt.on :l,:long,  'use long direction'
             opt.on :c,:create,  'Create bracket order but do not execute'
@@ -265,9 +266,13 @@ module PryIb
               @order_type = opts[:type]
               output.puts "Set order_type: #{@order_type}"
             end
+            if opts.account?
+              @account = opts[:account]
+              output.puts "Set account: #{@account}"
+            end
 
 
-            @bracket = PryIb::BracketOrder.new(ib,symbol)
+            @bracket = PryIb::BracketOrder.new(ib,symbol,@account)
             @bracket.setup( @quantity, @order_price, @stop_price,
                              @profit_price, @order_type, @direction )
 

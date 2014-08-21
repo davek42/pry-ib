@@ -7,10 +7,12 @@ class BracketOrder
   attr_accessor :id, :ib, :stop_price, :profit_price, :contract
   attr_accessor :parent_order, :stop_order, :profit_order
 
-  def initialize(ib, symbol )
+  def initialize(ib, symbol, account=nil )
     @id = PryIb::next_request_id
     @ib = ib
     @contract =  Security.make_stock_contract(symbol)
+    @account = account
+    log "Symbol: #{symbol}  Contract: #{@contract.inspect}"
   end
 
   def setup( quantity, order_price, stop_price, profit_price, parent_order_type, direction = :long )
@@ -34,8 +36,10 @@ class BracketOrder
       raise "Got Bad order direction: #{direction}"
     end
 
+    
     log "Bracket. dir:#{direction} quantity:#{quantity} order_price:#{order_price}  order_type:#{parent_order_type}"
-    log "  stop:#{stop_price} target:#{profit_price}"
+    log "  stop:#{stop_price} target:#{profit_price}  account:#{@account}"
+    log "  Symbol: #{@contract.symbol}  Contract: #{@contract.inspect}"
 
     #-- Parent Order --
     case parent_order_type
@@ -47,6 +51,7 @@ class BracketOrder
                               :action => parent_action,
                               :order_type => parent_order_type, # LMT, STP, MKT
                               :algo_strategy => '',
+                              :account => @account,
                               :transmit => false
     when "STP"
       @parent_order = IB::Order.new :total_quantity => quantity,
@@ -56,6 +61,7 @@ class BracketOrder
                               :action => parent_action,
                               :order_type => parent_order_type, # LMT, STP, MKT
                               :algo_strategy => '',
+                              :account => @account,
                               :transmit => false
      else
        log "Unknown order type: #{parent_order_type}"
@@ -70,6 +76,7 @@ class BracketOrder
                               :action => child_action,
                               :order_type => 'STP',
                               :parent_id => @parent_order.local_id,
+                              :account => @account,
                               :transmit => true
     end
     #-- Profit LMT
@@ -80,6 +87,7 @@ class BracketOrder
                                 :action => child_action,
                                 :order_type => 'LMT',
                                 :parent_id => @parent_order.local_id,
+                                :account => @account,
                                 :transmit => true
       elsif @profit_price == 0
         # Market on Close order
@@ -88,6 +96,7 @@ class BracketOrder
                                 :action => child_action,
                                 :order_type => 'MOC',
                                 :parent_id => @parent_order.local_id,
+                                :account => @account,
                                 :transmit => true
       else
         log "ERROR: got junk profit price: #{@profit_price}"
