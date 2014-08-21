@@ -37,6 +37,36 @@ module PryIb
           end
         end
 
+        create_command "chart" do
+          description "Get Chart from stock quotes"
+          group 'pry-ib'
+
+          def options(opt)
+            opt.on :m1, 'use 1 min period'
+            opt.on :m5, 'use 5 min period'
+            opt.on :h1, 'use one hour period'
+            opt.on :h2, 'use two hour period'
+            opt.on :d,:day, 'use day period'
+            opt.on :w,:week, 'use week period'
+          end
+          def process
+            raise Pry::CommandError, "Need a least one symbol" if args.size == 0
+            symbol = args.first
+            ib = PryIb::Connection::current
+            period = '5min'
+            period = '1min' if opts.m1?
+            period = '5min' if opts.m5?
+            period = '1hour' if opts.h1?
+            period = '2hour' if opts.h2?
+            period = 'day' if opts.day?
+            period = 'week' if opts.week?
+
+            output.puts "Chart: #{symbol} period:#{period}"
+            chart = PryIb::Chart.new(ib,symbol)
+            chart.open(period)
+          end
+        end
+
         create_command "tick" do
           description "Get Tick quote"
           group 'pry-ib'
@@ -209,9 +239,10 @@ module PryIb
         create_command "bracket" do
           description 'Execute Bracket order'
           banner <<-BANNER
-            Usage: bracket [ --quantiy <amount> ] [ --price <entry price> ] [ --stop <stop price> ][ --profit <profit price> ] [ --type <order type>] [ -l | -s ] <symbol>
+            Usage: bracket [ --quantiy <amount> ] [ --price <entry price> ] [ --stop <stop price> ][ --profit <profit price> ] [ --type <order type>] [ -l | -s ] [ --account <code> ] <symbol>
             Example: 
               bracket --quantity 200 --price 42.10 --stop 40.00 --profit 44.00 -l -type LMT AAPL
+              bracket  --price 100.36 --stop 100.05 --profit 100.50 --account U96711   AAPL
           BANNER
           group 'pry-ib'
           command_options(
