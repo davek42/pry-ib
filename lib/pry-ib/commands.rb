@@ -51,17 +51,60 @@ module PryIb
 
           end
         end
-
-        create_command "alert" do
-          description "Setup an alert"
+        create_command "account" do
+          description "Get account info"
+          banner <<-BANNER
+            Usage: account acct_code 
+            Example: 
+              account U964242 
+          BANNER
           group 'pry-ib'
 
           def process
             raise Pry::CommandError, "Need a least one symbol" if args.size == 0
+            code = args.first || ''
+            ib = PryIb::Connection::current
+            account = PryIb::Account.new(ib)
+            account.info(code)
+          end
+        end
+
+        create_command "alert" do
+          description "Setup an alert"
+          banner <<-BANNER
+            Usage: alert symbol | { |bar| bar.close > 42 }
+            Example: 
+              alert aapl | { |bar| bar.close > 42 }
+          BANNER
+          group 'pry-ib'
+          command_options(
+            :use_prefix => false,
+            :takes_block => true,
+          )
+
+          def options(opt)
+            opt.on :name=, 'set alert name'
+            opt.on :l,:list, 'list alerts'
+          end
+
+          def process
+            raise Pry::CommandError, "Need a least one symbol" if args.size == 0
             symbol = args.first
+
+            if opts.name?
+            end
+            if opts.name?
+              @name = opts[:name]
+              output.puts "Set name: #{@name}"
+            end
+
+            if command_block
+              @test = command_block
+              log(">> test proc: #{@test.inspect}")
+            end
             ib = PryIb::Connection::current
             alert = PryIb::Alert.new(ib)
-            alert.alert(symbol)
+            alert.alert(symbol, &command_block)
           end
         end
 

@@ -5,23 +5,44 @@ require 'ib-ruby'
 module PryIb
   class Alert
 
-    def initialize( ib )
+    @@alerts = {}
+
+    def initialize( ib, name = nil )
       @ib = ib
+      @name = name || PryIb::Alert.next_alert_name
       @request_id = PryIb::next_request_id
       @min_bars = []
+    end 
+
+    def self.get_alerts
+      @@alerts
+    end
+
+    def self.next_alert_name
+      "Alert%0.02d" %  @@alerts.size
+    end
+
+    def say(msg)
+      # Alex or Vicki are best voices
+      system( 'say --voice=Vicki "' + msg + '"')
     end
 
     def get_symbol
       @contract.symbol
     end
 
-    def check_alert(message)
+    def check_alert(message,test)
       bar = message.bar
       id = message.request_id
       dt = Date.epoch_to_datetime( bar.time )
-      symbol = get_symbol(id)
+      symbol = get_symbol
 
       log ">>ID:#{id} - #{symbol} - Bar. #{bar.close} hour:#{dt.hour} min:#{dt.min} sec:#{dt.sec}"
+
+      if test.call(bar)
+        log ">> Alert #{symbol}  at #{bar.close}"
+        say "Alert #{symbol} at #{bar.close}"
+      end
 
       if dt.sec == 0
         log ">> add min bar. min:#{dt.min} sec:#{dt.sec}"
@@ -30,9 +51,10 @@ module PryIb
     end
 
 
-    def alert(symbol)
+    def alert(symbol,&test)
       log ">> Alert: #{symbol}"
       @contract =  Security.make_stock_contract(symbol)
+      log ">> contract: #{@contract}"
 
       # Subscribe to TWS alerts/errors
       @ib.subscribe(:Alert) { |msg| log msg.to_human }
@@ -41,7 +63,7 @@ module PryIb
       # to figure out what contract it's for.
       @ib.subscribe(IB::Messages::Incoming::RealTimeBar) do |msg|
         #log "#{symbol}: #{msg.to_human}"
-        check_alert(msg)
+        check_alert(msg,test)
       end
 
       log "Request RealTime. Contract: #{@contract.inspect}"

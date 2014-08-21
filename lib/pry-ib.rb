@@ -2,6 +2,7 @@
 require 'pry'
 require 'pry-ib/version'
 require 'pry-ib/commands'
+require 'pry-ib/account'
 require 'pry-ib/connection'
 require 'pry-ib/tick'
 require 'pry-ib/security'
