@@ -67,27 +67,6 @@ module PryIb
           end
         end
 
-        create_command "tick" do
-          description "Get Tick quote"
-          group 'pry-ib'
-          def options(opt)
-            opt.on :num=, 'Number of ticks. (Default: 2)'
-          end
-
-          def process
-            raise Pry::CommandError, "Need a least one symbol" if args.size == 0
-            symbol = args.first
-            @num_ticks = 2
-            if opts.num?
-              @num_ticks = opts[:num].to_i
-            end
-            ib = PryIb::Connection::current
-            output.puts "Tick: #{symbol} Num Ticks:#{@num_ticks}"
-            tick = PryIb::Tick.new(ib)
-            tick.tick(symbol,@num_ticks)
-
-          end
-        end
 
         create_command "account" do
           description "Get account info"
@@ -156,17 +135,46 @@ module PryIb
           end
         end
 
-        create_command "real" do
-          description "Get Real Time quote"
+        create_command "tick" do
+          description "Get Tick quote"
           group 'pry-ib'
+          def options(opt)
+            opt.on :num=, 'Number of ticks. (Default: 2)'
+          end
 
           def process
             raise Pry::CommandError, "Need a least one symbol" if args.size == 0
             symbol = args.first
+            num_ticks = 2
+            if opts.num?
+              num_ticks = opts[:num].to_i
+            end
             ib = PryIb::Connection::current
-            output.puts "Tick: #{symbol}"
+            output.puts "Tick: #{symbol} Num Ticks:#{num_ticks}"
+            tick = PryIb::Tick.new(ib)
+            tick.tick(symbol,num_ticks)
+
+          end
+        end
+
+        create_command "real" do
+          description "Get Real Time quote"
+          group 'pry-ib'
+          def options(opt)
+            opt.on :num=, 'Number of quotes. (Default: 60)'
+          end
+
+          def process
+            raise Pry::CommandError, "Need a least one symbol" if args.size == 0
+            symbol = args.first
+            num_quotes = 60
+            if opts.num?
+              num_quotes = opts[:num].to_i
+            end
+            ib = PryIb::Connection::current
+            output.puts "Quote: #{symbol} Num Quotes:#{num_quotes}"
             real = PryIb::RealTimeQuote.new(ib)
-            real.quote(symbol)
+            real.quote(symbol,num_quotes)
           end
         end
 
