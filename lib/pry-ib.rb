@@ -1,8 +1,9 @@
 # pry-ib plugin
 require 'pry'
 require 'pry-ib/version'
-require 'pry-ib/commands'
+require 'pry-ib/alert'
 require 'pry-ib/account'
+require 'pry-ib/commands'
 require 'pry-ib/connection'
 require 'pry-ib/tick'
 require 'pry-ib/security'
@@ -11,7 +12,7 @@ require 'pry-ib/chart'
 require 'pry-ib/order'
 require 'pry-ib/bracket'
 require 'pry-ib/real_time_quote'
-require 'pry-ib/alert'
+require 'pry-ib/scanner'
 require 'pry-ib/util/time_util'
 
 
