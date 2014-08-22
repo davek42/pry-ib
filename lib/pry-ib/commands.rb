@@ -52,7 +52,7 @@ module PryIb
           def process
             raise Pry::CommandError, "Need a least one symbol" if args.size == 0
             symbol = args.first
-            ib = PryIb::Connection::current
+            #ib = PryIb::Connection::current
             period = '5min'
             period = '1min' if opts.m1?
             period = '5min' if opts.m5?
@@ -62,7 +62,7 @@ module PryIb
             period = 'week' if opts.week?
 
             output.puts "Chart: #{symbol} period:#{period}"
-            chart = PryIb::Chart.new(ib,symbol)
+            chart = PryIb::Chart.new(nil,symbol)
             chart.open(period)
           end
         end
