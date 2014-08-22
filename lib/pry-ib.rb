@@ -45,4 +45,6 @@ Pry.config.prompt = proc { |obj, nest_level, _| "IB: #{obj}(#{nest_level})> " }
 #Pry.config.color = true
 
 Pry.config.commands.import PryIb::Commands
+Pry.config.commands.alias_command "live", "connection -l"
+Pry.config.commands.alias_command "test", "connection -t"
 
