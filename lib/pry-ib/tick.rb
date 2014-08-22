@@ -4,24 +4,31 @@ require 'ib-ruby'
 
 module PryIb
   class Tick
+    MAX_TICKS = 200
 
     def initialize( ib )
       @ib = ib
+      @request_id = PryIb::next_request_id
+      @tick_count = 0
     end
 
 #    def log(message)
 #      Pry::output.puts(message)
 #   end
 
+    # See tick types: https://www.interactivebrokers.com/en/software/api/apiguide/tables/tick_types.htm
     def displayTickMessage( message )
       
       tick_type = case message.tick_type
-      when 1 then "bid  "
-      when 2 then "ask  "
-      when 4 then "last "
-      when 6 then "high "
-      when 7 then "low  "
-      when 9 then "close"
+      when 4 
+        @tick_count += 1
+        "last "
+      when 1  then "bid  "
+      when 2  then "ask  "
+      when 6  then "high "
+      when 7  then "low  "
+      when 9  then "close"
+      when 14 then "open "
       else 
          message.tick_type.to_s
       end
@@ -32,26 +39,32 @@ module PryIb
 
 
 
-    def tick(symbol)
-      log("Get tick for :#{symbol}")
+    def tick(symbol, num_ticks=2)
+      @tick_count = 0
+      log "\n******** Tick Start: #{symbol} *********\n\n"
 
       contract =  Security.make_stock_contract(symbol)
-      log("Contract: #{contract.inspect}")
+      #log("Contract: #{contract.inspect}")
 
-      @ib.subscribe(:Alert) { |msg| log "ALERT: #{msg.to_human}" }
+      alert_id = @ib.subscribe(:Alert) { |msg| log "ALERT: #{msg.to_human}" }
       #ib.subscribe(:TickGeneric, :TickString, :TickPrice, :TickSize) { |msg| log msg.inspect }
 
       # Display these ticks
-      @ib.subscribe( :TickPrice) { |msg| displayTickMessage(msg) }
+      price_id = @ib.subscribe( :TickPrice) { |msg| displayTickMessage(msg) }
       # send these tick messages to bit bucket
-      @ib.subscribe(:TickGeneric, :TickString,  :TickSize) { |msg| }
+      other_id = @ib.subscribe(:TickGeneric, :TickString,  :TickSize) { |msg| }
 
-      @ib.send_message :RequestMarketData, :id => 123, :contract => contract
+      @ib.send_message :RequestMarketData, :id => @request_id, :contract => contract
 
-      log "\nSubscribed to market data"
-      log "\n******** Press <Enter> to cancel... *********\n\n"
-      gets
-      log "Cancelling market data subscription.."
+      #log "\nSubscribed to tick data: #{symbol}"
+      while(@tick_count < num_ticks && @tick_count < MAX_TICKS)
+        sleep 1
+      end
+      log "\n******** Tick Done: #{symbol} *********\n\n"
+      @ib.send_message :CancelMarketData, :id => @request_id 
+      @ib.unsubscribe alert_id
+      @ib.unsubscribe price_id
+      @ib.unsubscribe other_id
     end
 
   end
