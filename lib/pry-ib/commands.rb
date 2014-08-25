@@ -51,6 +51,7 @@ module PryIb
           def options(opt)
             opt.on :x,:cancel, 'cancel ALL orders'
             opt.on :s, :show, 'show open orders (default)'
+            opt.on :sym=, 'Only show for symbol'
           end
 
           def process
@@ -60,7 +61,11 @@ module PryIb
               order.cancel_orders
               return
             end
-            order.list_orders
+            if opts.sym?
+
+            end
+            sym = (opts.sym?) ? opts[:sym].upcase : nil
+            order.list_orders(sym)
           end
         end
 
