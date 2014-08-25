@@ -7,9 +7,12 @@ module PryIb
 
     @@alerts = {}
 
-    def initialize( ib, name = nil )
+
+    #def initialize( ib, name = nil )
+    def initialize( ib, opts={} )
       @ib = ib
-      @name = name || PryIb::Alert.next_alert_name
+      @name = opts[:name] || PryIb::Alert.next_alert_name
+      @sound = opts[:sound] || false
       @request_id = PryIb::next_request_id
       @min_bars = []
     end 
@@ -40,14 +43,14 @@ module PryIb
       log ">>ID:#{id} - #{symbol} - Bar. #{bar.close} hour:#{dt.hour} min:#{dt.min} sec:#{dt.sec}"
 
       if test.call(bar)
-        log ">> Alert #{symbol}  at #{bar.close}"
+        log "!!!!>> Alert #{symbol}  at #{bar.close}  <<!!!!"
         say "Alert #{symbol} at #{bar.close}"
       end
 
-      if dt.sec == 0
-        log ">> add min bar. min:#{dt.min} sec:#{dt.sec}"
-        @min_bars << bar
-      end
+#      if dt.sec == 0
+#        log ">> add min bar. min:#{dt.min} sec:#{dt.sec}"
+#        @min_bars << bar
+#      end
     end
 
 

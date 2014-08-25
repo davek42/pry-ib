@@ -168,25 +168,21 @@ module PryIb
           def options(opt)
             opt.on :name=, 'set alert name'
             opt.on :l,:list, 'list alerts'
+            opt.on :s,:sound, 'Use audio alert'
           end
 
           def process
             raise Pry::CommandError, "Need a least one symbol" if args.size == 0
             symbol = args.first
-
-            if opts.name?
-            end
-            if opts.name?
-              @name = opts[:name]
-              output.puts "Set name: #{@name}"
-            end
+            sound = (opts.sound?) ? true : false
+            name =  (opts.name?)  ? opts[:name] : nil
 
             if command_block
               @test = command_block
               log(">> test proc: #{@test.inspect}")
             end
             ib = PryIb::Connection::current
-            alert = PryIb::Alert.new(ib)
+            alert = PryIb::Alert.new(ib, :sound => sound, :name => name)
             alert.alert(symbol, &command_block)
           end
         end
@@ -217,19 +213,21 @@ module PryIb
           description "Get Real Time quote"
           group 'pry-ib'
           def options(opt)
-            opt.on :num=, 'Number of quotes. (Default: 60)'
+            opt.on :num=, 'Number of quotes. (Default: 200)'
+            opt.on :v,:verbose, 'Verbose display'
           end
 
           def process
             raise Pry::CommandError, "Need a least one symbol" if args.size == 0
             symbol = args.first
-            num_quotes = 60
+            verbose = (opts.verbose?) ? true : false
+            num_quotes = 200
             if opts.num?
               num_quotes = opts[:num].to_i
             end
             ib = PryIb::Connection::current
             output.puts "Quote: #{symbol} Num Quotes:#{num_quotes}"
-            real = PryIb::RealTimeQuote.new(ib)
+            real = PryIb::RealTimeQuote.new(ib,:verbose => verbose)
             real.quote(symbol,num_quotes)
           end
         end

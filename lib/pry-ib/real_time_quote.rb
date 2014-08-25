@@ -6,9 +6,10 @@ module PryIb
   class RealTimeQuote
     MAX_QUOTES = 7 * 60 * (60/5)  # something like a days worth
 
-    def initialize( ib )
+    def initialize( ib, opts={} )
       @ib = ib
       @request_id = PryIb::next_request_id
+      @verbose = opts.fetch(opts[:verbose], false)
       @quote_count = 0
     end
 
@@ -25,8 +26,16 @@ module PryIb
       # to figure out what contract it's for.
       real_id = @ib.subscribe(IB::Messages::Incoming::RealTimeBar) do |msg|
         @quote_count += 1
-        cnt = "#{sprintf("%02d", @quote_count)}"
-        log "[#{cnt}]#{symbol}: #{msg.to_human}"
+        if @verbose
+          cnt = "#{sprintf("%02d", @quote_count)}"
+          log "[#{cnt}]#{symbol}: #{msg.to_human}"
+        else
+          bar = msg.bar
+          id  = msg.request_id
+          dt = Date.epoch_to_datetime( bar.time )
+
+          log ">>ID:#{id} - #{symbol} - Bar. #{bar.close} hour:#{dt.hour} min:#{dt.min} sec:#{dt.sec}"
+        end
       end
 
       log "Request RealTime. Contract: #{@contract.inspect}"
