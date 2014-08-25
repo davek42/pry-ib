@@ -5,7 +5,7 @@ require 'ib-ruby'
 module PryIb
   class Alert
 
-    @@alerts = {}
+    @@alerts = []
 
 
     #def initialize( ib, name = nil )
@@ -25,6 +25,16 @@ module PryIb
       "Alert%0.02d" %  @@alerts.size
     end
 
+    def self.list
+      @@alerts.each do |aa|
+        log ">> #{aa.name} "
+      end
+    end
+
+    def save
+      @@alerts << self
+    end
+
     def say(msg)
       # Alex or Vicki are best voices
       system( 'say --voice=Vicki "' + msg + '"')
@@ -40,17 +50,17 @@ module PryIb
       dt = Date.epoch_to_datetime( bar.time )
       symbol = get_symbol
 
-      log ">>ID:#{id} - #{symbol} - Bar. #{bar.close} hour:#{dt.hour} min:#{dt.min} sec:#{dt.sec}"
 
       if test.call(bar)
         log "!!!!>> Alert #{symbol}  at #{bar.close}  <<!!!!"
         say "Alert #{symbol} at #{bar.close}"
       end
 
-#      if dt.sec == 0
-#        log ">> add min bar. min:#{dt.min} sec:#{dt.sec}"
+      if dt.sec == 0
+        #log ">> add min bar. min:#{dt.min} sec:#{dt.sec}"
 #        @min_bars << bar
-#      end
+        log ">>ID:#{id} - #{symbol} - Bar. #{bar.close} hour:#{dt.hour} min:#{dt.min} sec:#{dt.sec}"
+      end
     end
 
 
@@ -60,11 +70,11 @@ module PryIb
       log ">> contract: #{@contract}"
 
       # Subscribe to TWS alerts/errors
-      @ib.subscribe(:Alert) { |msg| log msg.to_human }
+      alert_id = @ib.subscribe(:Alert) { |msg| log msg.to_human }
 
       # Subscribe to RealTimeBar incoming events. We have to use message request_id
       # to figure out what contract it's for.
-      @ib.subscribe(IB::Messages::Incoming::RealTimeBar) do |msg|
+      real_id = @ib.subscribe(IB::Messages::Incoming::RealTimeBar) do |msg|
         #log "#{symbol}: #{msg.to_human}"
         check_alert(msg,test)
       end
@@ -77,9 +87,14 @@ module PryIb
                             :data_type => :trades,
                             :use_rth => false)
 
+      save 
       # So we need to interrupt manually when we do not want any more quotes.
       log "\n******** Press <Enter> to exit... *********\n\n"
       STDIN.gets
+      log "\n******** Alert Done: #{symbol} *********\n\n"
+      @ib.send_message :CancelRealTimeBars, :id => @request_id 
+      @ib.unsubscribe alert_id
+      @ib.unsubscribe real_id
     end
   end
 

@@ -33,8 +33,8 @@ class BracketOrder
   end
 
   def self.list
-    log "Nil brackets"; return nil if @@brackets.nil?
-    log "No brackets"; return nil if @@brackets.empty?
+    log "Nil brackets"  if @@brackets.nil?
+    log "No brackets"   if @@brackets.empty?
     @@brackets.each do |bb|
       log(">>  #{bb.name} at #{bb.order_price}")
     end
