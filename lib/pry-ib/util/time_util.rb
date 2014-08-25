@@ -128,6 +128,10 @@ class Date
         "#{sprintf("%02d", hour)}:#{sprintf("%02d", min)}:#{sprintf("%02d", sec)}"
   end
 
+  # DateTime in a simple name friendly format (no spaces)
+  def to_name
+    "#{sprintf("%02d", hour)}_#{sprintf("%02d", min)}_#{sprintf("%02d", sec)}"
+  end
   # DateTime in a filesystem name friendly format (no spaces)
   def to_filename
     "#{year}#{sprintf("%02d", month)}#{sprintf("%02d", day)}-" +

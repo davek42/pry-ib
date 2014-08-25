@@ -339,13 +339,25 @@ module PryIb
             opt.on :s,:short, 'use short direction'
             opt.on :l,:long,  'use long direction'
             opt.on :c,:create,  'Create bracket order but do not execute'
+            opt.on :list,  'list bracket orders'
+            opt.on :last,     'last bracket orders'
           end
 
           def process
+            if opts.list?
+              PryIb::BracketOrder.list
+              return PryIb::BracketOrder.last
+            end
+            if opts.last?
+              return PryIb::BracketOrder.last
+            end
+
+            #
             raise Pry::CommandError, "Need a least one symbol" if opts.to_hash.size == 0 && args.size == 0
             symbol = args.first
             ib = PryIb::Connection::current
             output.puts "Bracket: #{symbol}"
+
 
             if opts.quantity?
               @quantity = opts[:quantity].to_i
@@ -373,7 +385,7 @@ module PryIb
             end
 
 
-            @bracket = PryIb::BracketOrder.new(ib,symbol,@account)
+            @bracket = PryIb::BracketOrder.new(ib,:symbol => symbol, :account => @account)
             @bracket.setup( @quantity, @order_price, @stop_price,
                              @profit_price, @order_type, @direction )
 

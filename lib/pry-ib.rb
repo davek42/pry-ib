@@ -56,4 +56,5 @@ Pry.config.commands.alias_command "h5",   "hist -T 5"
 Pry.config.commands.alias_command "h10",  "hist -T 10"
 Pry.config.commands.alias_command "h20",  "hist -T 20"
 Pry.config.commands.alias_command "h50",  "hist -T 50"
+Pry.config.commands.alias_command "bb", 'bracket #{@symbol}  --price #{@price} --stop #{@stop} --profit #{@profit} --quantity #{quantity} --account #{@account}'
 

@@ -4,22 +4,50 @@ require 'ib-ruby'
 
 module PryIb
 class BracketOrder
-  attr_accessor :id, :ib, :stop_price, :profit_price, :contract
+  attr_accessor :id, :ib, :order_price,:stop_price, :profit_price, :contract, :name
   attr_accessor :parent_order, :stop_order, :profit_order
 
-  def initialize(ib, symbol, account=nil )
+  @@brackets = []
+
+  #def initialize(ib, symbol, account=nil )
+  def initialize(ib, opts={} )
+    log "init opts:#{opts.inspect}"
     @id = PryIb::next_request_id
     @ib = ib
-    @contract =  Security.make_stock_contract(symbol)
-    @account = account
-    log "Symbol: #{symbol}  Contract: #{@contract.inspect}"
+    @symbol = opts[:symbol]
+    @contract =  Security.make_stock_contract(@symbol)
+    @account = opts[:account]
+    @name = bracket_name
+    log "Symbol: #{@symbol}  Contract: #{@contract.inspect}"
+  end
+
+  def bracket_name
+    "#{@symbol}_#{DateTime::now.to_name}"
+  end
+
+  def save
+    @@brackets << self
+  end
+  def self.last
+    @@brackets.last
+  end
+
+  def self.list
+    log "Nil brackets"; return nil if @@brackets.nil?
+    log "No brackets"; return nil if @@brackets.empty?
+    @@brackets.each do |bb|
+      log(">>  #{bb.name} at #{bb.order_price}")
+    end
   end
 
   def setup( quantity, order_price, stop_price, profit_price, parent_order_type, direction = :long )
+    raise "No symbol" if @symbol.nil? || @symbol.empty?
     raise "got bad order quanity" if quantity.nil? or quantity <= 0
     raise "Got bad order price"  if order_price.nil? or order_price <= 0
     raise "Bad order type: #{parent_order_type}"  unless ['LMT','STP','MKT'].include?(parent_order_type)
+    
 
+    @order_price = order_price
     @stop_price = stop_price
     @profit_price = profit_price
     @ib.subscribe(:Alert, :OpenOrder, :OrderStatus) { |msg| log "---> #{msg.to_human}" }
@@ -122,11 +150,14 @@ class BracketOrder
         @ib.place_order( @profit_order, @contract )
       end
 
+
       log "------------------------"
       log "-- SEND Orders    ------"
       log "-- parent local_id: #{@parent_order.local_id} client_id:#{@parent_order.client_id}"
       log "------------------------"
       @ib.send_message :RequestOpenOrders
+
+      save # store this bracket
     rescue => ex
       log "ERROR: Failed while placing bracket orders"
       log "Parent: #{@parent_order.inspect}"
