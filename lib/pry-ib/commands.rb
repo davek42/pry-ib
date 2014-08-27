@@ -341,6 +341,7 @@ module PryIb
             opt.on :profit=,  'set profit target price'
             opt.on :type=,    'set order type  (MKT, LMT, STP) default LMT'
             opt.on :account=, 'set account'
+            opt.on :trail=,   'set trailing stop amount. '
             opt.on :s,:short, 'use short direction'
             opt.on :l,:long,  'use long direction'
             opt.on :c,:create,  'Create bracket order but do not execute'
@@ -362,6 +363,9 @@ module PryIb
             symbol = args.first
             ib = PryIb::Connection::current
             output.puts "Bracket: #{symbol}"
+
+            pager_original = Pry.config.pager 
+            Pry.config.pager = false
 
 
             if opts.quantity?
@@ -395,6 +399,14 @@ module PryIb
                              @profit_price, @order_type, @direction )
 
             @bracket.send_order unless opts.create?
+
+            if opts.trail?
+              @trail = opts[:trail].to_f
+              output.puts "Set trail: #{@trail}"
+              @bracket.trail(@trail)
+            end
+
+            Pry.config.pager = pager_original
 
             @bracket
           end
