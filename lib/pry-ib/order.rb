@@ -43,15 +43,16 @@ module PryIb
 
       log "--------- Open -----"
       @open_orders.each do |perm_id,data|
-        order = data[:order]
-        contract = data[:contract]
+        order      = data[:order]
+        local_id   = order[:local_id]
+        contract   = data[:contract]
         state_data = @order_status[perm_id]
-        os = state_data[:order_state]
-        status = os[:status]
-        symbol = contract[:symbol]
+        os         = state_data[:order_state]
+        status     = os[:status]
+        symbol     = contract[:symbol]
         if !match_symbol || match_symbol == symbol
         #  log "macth: #{match_symbol} symbol:#{symbol}"
-          log "Open[#{perm_id}]: #{symbol} Action:#{order[:action]} Type:#{order[:order_type]}  Quant:#{order[:total_quantity]}  Status:#{status} Account:#{order[:account]}"
+          log "Open[#{perm_id}]/[#{local_id}]: #{symbol} Action:#{order[:action]} Type:#{order[:order_type]}  Quant:#{order[:total_quantity]}  Status:#{status} Account:#{order[:account]}"
         end
       end
 

@@ -5,14 +5,14 @@ module PryIb
   class Connection
      @@host='127.0.0.1'
 
-     #   tws_port = 7442     # TWS live port
-     #   tws_port = 7496     # TWS demo/test port
-     #   tws_port = 4001     # gateway port
-     SERVICE_PORTS={ tws_live: 7442, tws_test: 7496, tws_gateway: 4001 }
+     #   ib_port = 7442     # IB live port
+     #   ib_port = 7496     # IB demo/test port
+     #   ib_port = 4001     # gateway port
+     SERVICE_PORTS={ ib_live: 7442, ib_test: 7496, ib_gateway: 4001 }
      DEFAULT_OPTIONS = {  client_id: nil,
                            host:    @@host,
-                           port:    SERVICE_PORTS[:tws_test],
-                           service: :tws_test
+                           port:    SERVICE_PORTS[:ib_test],
+                           service: :ib_test
       }
 
       @@conn = nil  # IB connection
@@ -25,10 +25,14 @@ module PryIb
         Pry.config.ib_gateway_port ||= 4001
 
         @@host = Pry.config.ib_host 
-        SERVICE_PORTS[:tws_live] = Pry.config.ib_live_port 
-        SERVICE_PORTS[:tws_test] = Pry.config.ib_test_port 
-        SERVICE_PORTS[:tws_gateway] = Pry.config.ib_gateway_port 
+        SERVICE_PORTS[:ib_live] = Pry.config.ib_live_port 
+        SERVICE_PORTS[:ib_test] = Pry.config.ib_test_port 
+        SERVICE_PORTS[:ib_gateway] = Pry.config.ib_gateway_port 
         #log "Service Ports: #{SERVICE_PORTS.inspect}"
+      end
+
+      def host
+        @@host
       end
 
       def self.service
@@ -36,6 +40,7 @@ module PryIb
       end
 
       def self.current
+        return @@conn unless @@conn.nil?
         connection(@@service)
       end
 
@@ -55,13 +60,13 @@ module PryIb
         port = SERVICE_PORTS[@@service]
         options[:port] = port
         
-        if options[:service] == :tws_live
+        if options[:service] == :ib_live
           log "************************************"
           log "**** GO LIVE !!!"
           log "************************************"
           system('echo -e "\a\a"')
         end
-        # Connect to IB TWS.
+        # Connect to IB
         new_connection( options )
 
         @@conn
@@ -70,7 +75,7 @@ module PryIb
       def self.new_connection( options )
         begin
           @@conn.close if @@conn
-          # Connect to IB TWS.
+          # Connect to IB 
           log "---- Connect: #{options[:service].to_s}. options:#{options.inspect}  "
           @@conn = IB::Connection.new( client_id:  options[:client_id],  host: options[:host], port: options[:port])
         rescue => err

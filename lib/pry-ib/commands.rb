@@ -428,15 +428,17 @@ module PryIb
 
           def process
             if opts.show?
-              output.puts "Current Service:#{ PryIb::Connection::service}"
-              PryIb::Connection::TWS_SERVICE_PORTS.each do |key, val|
-                output.puts "Service: #{key} Port:#{val}"
+              output.puts "Current Service:#{ PryIb::Connection::service} "
+              output.puts "Current connection client_id: #{PryIb::Connection::current.client_id}"
+              PryIb::Connection::SERVICE_PORTS.each do |key, val|
+                current = (key == PryIb::Connection::service) ? "(Active)" : ""
+                output.puts "Service: #{key} Port:#{val}  #{current}"
               end
               return
             end
             if opts.host?
               output.puts "--->"
-              output.puts "Host: #{PryIb::Connection::TWS_HOST}"
+              output.puts "Host: #{PryIb::Connection::host}"
               return
             end
             if opts.close?
@@ -464,13 +466,13 @@ module PryIb
               output.puts "Set service: #{@service}"
             elsif opts.live?
               output.puts "Live service "
-              @service = :tws_live
+              @service = :ib_live
               set_prompt "LIVE"
             elsif opts.test? || opts.test?
-              @service = :tws_test
+              @service = :ib_test
               set_prompt "TEST"
             elsif opts.gateway?
-              @service = :tws_gateway
+              @service = :ib_gateway
               set_prompt "GATE"
             end
 
