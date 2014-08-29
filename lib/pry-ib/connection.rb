@@ -1,5 +1,5 @@
 #  General utilities or use with scripts
-require 'ib-ruby'
+#require 'ib-ruby'
 
 module PryIb
   class Connection

@@ -16,6 +16,9 @@ require_relative 'pry-ib/real_time_quote'
 require_relative 'pry-ib/scanner'
 require_relative 'pry-ib/util/time_util'
 
+require 'pry-ib/mongo/connection'
+require 'pry-ib/mongo/quote'
+
 
 
 module PryIb
@@ -36,6 +39,9 @@ end
 
 # configuration
 PryIb::Connection::setup
+
+# mongo connectin
+PryIb::Mongo::connect
 
 # Startup sanity check
 Pry.config.ib_test ||= false

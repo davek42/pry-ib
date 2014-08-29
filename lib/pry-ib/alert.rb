@@ -1,6 +1,6 @@
 # Tick data routines
 #
-require 'ib-ruby'
+#require 'ib-ruby'
 
 module PryIb
   class Alert

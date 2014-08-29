@@ -1,6 +1,6 @@
 # Real Time quote routines
 #
-require 'ib-ruby'
+#require 'ib-ruby'
 
 module PryIb
   class RealTimeQuote

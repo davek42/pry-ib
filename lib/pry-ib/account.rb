@@ -1,6 +1,6 @@
 # Account routines
 #
-require 'ib-ruby'
+#require 'ib-ruby'
 
 module PryIb
   class Account

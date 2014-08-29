@@ -1,4 +1,4 @@
-
+# Pry-ib commands
 
 module PryIb
     def self.hello
@@ -99,6 +99,37 @@ module PryIb
           end
         end
 
+        create_command "database" do
+          description "database -- manage database connection"
+          group 'pry-ib'
+          def setup
+            @service = nil
+          end
+          def options(opt)
+            opt.on :s,:settings, 'show mongoid settings'
+            opt.on :p,:ping, 'ping mongo db'
+            opt.on :c,:collections, 'show collections'
+          end
+          def process
+            if opts.settings?
+              ss =PryIb::Mongo::settings
+              log "Settings: #{ss.inspect}"
+              return
+            end
+            if opts.ping?
+              ping = PryIb::Mongo::ping
+              log "Ping: #{ping.inspect}"
+              return ping
+            end
+            if opts.collections?
+              cc = PryIb::Mongo::collections
+              log "Collections: #{cc.inspect}"
+              return ping
+            end
+
+          end
+
+        end
 
         create_command "account" do
           description "Get account info"
@@ -255,6 +286,7 @@ module PryIb
             opt.on :s, :stats, 'show stats only'
             opt.on :duration=, 'set duratin value'
             opt.on :bar=, 'set bar size value'
+            opt.on :p, :persist, 'persist to db'
           end
 
           def process
@@ -306,6 +338,15 @@ module PryIb
             output.puts "Quote: #{symbol}"
             hist = PryIb::History.new(ib)
             @quote_hist = hist.quote(symbol,@duration,@bar_size,@stats_only)
+
+            if opts.persist?
+              bars = @quote_hist.first.last
+              bars.each do |bar|
+                #puts ">> #{bar.inspect} "
+                PryIb::Mongo::Quote.new.save_bar(symbol,bar)
+              end
+            end
+
             (@stats_only) ? nil : @quote_hist
           end
         end

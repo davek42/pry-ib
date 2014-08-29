@@ -102,8 +102,15 @@ class Date
 
   def self.ib_to_datetime(time)
     begin
-      tt = time.strip + " -5"  # hack in timezone offset
-      dt = DateTime.strptime(tt, '%Y%m%d %H:%M:%S %z')
+      fmt = ''
+      tt = time
+      if time.size == "YYYYMMDD".size
+        fmt = '%Y%m%d'    # FIXME  -- Work around. Need to figure out why reqHistoricalData does not return epoch time
+      else
+        fmt = '%Y%m%d %H:%M:%S %z'
+        tt = time.strip + " -5"  # hack in timezone offset
+      end
+      dt = DateTime.strptime(tt, fmt)
     rescue => ex
       puts "ERROR: Failed to convert IB time: #{time.inspect}"
       raise ex
