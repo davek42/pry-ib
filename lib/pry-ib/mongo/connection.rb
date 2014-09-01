@@ -1,35 +1,64 @@
 # Order status routines
 #
-require 'mongoid'
+require 'mongo'
 
 module PryIb
   module Mongo
 
-    # See http://mongoid.org/en/mongoid/docs/installation.html#configuration
-    DEFAULT_SETTING = {"sessions"=>{
-      "default"=>{"database"=>"pryib",
-                  "hosts"=>["127.0.0.1:27017"],
-    }}}
+    ### Standard URI format: mongodb://[dbuser:dbpassword@]host:port/dbname
+    DEFAULT_URI =  "mongodb://127.0.0.1:27017/pryib"
 
 
-    def self.connect
-      Mongoid.load_configuration(settings)
+    DB_NAME = 'pryib'
+    @@conn = nil
+    @@uri = DEFAULT_URI
+
+
+
+
+    def self.connect(uri=nil)
+      return @@conn if @@conn
+      get_db_name
+      @@uri ||= uri || DEFAUL_URI
+      puts "---> do connection. #{@@uri}"
+      @@conn = ::Mongo::MongoClient.from_uri(@@uri)
+    end 
+
+    def self.close
+      @@conn.close if @conn
+      @@conn = nil
     end
 
-    def self.settings 
-      @@settings ||= Pry.config.mongo_settings || DEFAULT_SETTING
+    def self.get_db(conn=nil)
+      conn = self.connect if conn.nil?
+      @@db = conn.db(@@db_name)
     end
 
-    def self.settings=(settings)
-      @@settings = settings || DEFAULT_SETTING
+
+
+    def self.uri 
+      @@uri ||= Pry.config.mongo_uri || DEFAULT_URI
+    end
+
+    ### Standard URI format: mongodb://[dbuser:dbpassword@]host:port/dbname
+    def self.uri=(uri)
+      @@uri = uri || DEFAULT_URI
+    end
+
+    def self.get_db_name
+      @@db_name = @@uri.match(/mongodb:\S*\/(\S*)$/).captures
     end
 
     def self.ping
-      Mongoid.default_session.command(ping: 1)
+     @@conn.ping 
+    end
+
+    def self.db_names
+      @@conn.database_names
     end
 
     def self.collections
-      Mongoid.default_session.collection_names
+      get_db.collection_names
     end
 
 
