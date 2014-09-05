@@ -105,15 +105,29 @@ module PryIb
           def setup
             @service = nil
           end
+
           def options(opt)
-            opt.on :s,:settings, 'show mongoid settings'
-            opt.on :p,:ping, 'ping mongo db'
+#            opt.on :service=,  'set Service name'
+            opt.on :s, :show,  'show service and uri'
+            opt.on :c, :close, 'close current connection'
+            opt.on :l, :live,  'use Live Service'
+            opt.on :t, :test,  'use Test Service'
+            opt.on :g,:gateway, 'use Gateway Service'
+            opt.on :u,:uri,    'show mongo db uri'
+            opt.on :p,:ping,   'ping mongo db'
             opt.on :c,:collections, 'show collections'
           end
+
           def process
-            if opts.settings?
-              ss =PryIb::Mongo::settings
-              log "Settings: #{ss.inspect}"
+
+            PryIb::Mongo::connect(:ib_live) if opts.live?
+            PryIb::Mongo::connect(:ib_test) if opts.test?
+            PryIb::Mongo::connect(:ib_gateway) if opts.gateway?
+
+            if opts.show?
+              serv = PryIb::Mongo::service
+              log "DB service: #{serv} "
+              log "  URI: #{PryIb::Mongo::uri}" if serv
               return
             end
             if opts.ping?

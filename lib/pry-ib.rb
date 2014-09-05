@@ -39,7 +39,7 @@ end
 
 
 # mongo connectin
-PryIb::Mongo::connect
+PryIb::Mongo::setup
 
 # Startup sanity check
 Pry.config.ib_test ||= false
