@@ -464,11 +464,6 @@ module PryIb
             @service = nil
           end
 
-          def set_prompt(name="")
-            #Pry.config.prompt = proc { |obj, nest_level, _| "IB(#{name}: #{obj}(#{nest_level})> " }
-            _pry_.prompt = proc { |obj, nest_level, _| "IB(#{name}): #{obj}(#{nest_level})> " }
-          end
-
           def options(opt)
             opt.on :s, :show, "show services"
             opt.on :c, :close, "close current connection"
@@ -478,7 +473,7 @@ module PryIb
             opt.on :service=, 'set Service name'
             opt.on :l, :live, "use Live Service"
             opt.on :t, :test,  "use Test Service"
-            opt.on :g,:gateway, "use Gateway Service"
+            opt.on :g, :gateway, "use Gateway Service"
           end
 
           def process
@@ -499,7 +494,6 @@ module PryIb
             if opts.close?
               output.puts "--->"
               output.puts "Close: #{PryIb::Connection::service}"
-              set_prompt ""
               PryIb::Connection::close
               return
             end
@@ -520,20 +514,18 @@ module PryIb
               @service = opts[:service].to_sym
               output.puts "Set service: #{@service}"
             elsif opts.live?
-              output.puts "Live service "
               @service = :ib_live
-              set_prompt "LIVE"
             elsif opts.test? || opts.test?
               @service = :ib_test
-              set_prompt "TEST"
             elsif opts.gateway?
               @service = :ib_gateway
-              set_prompt "GATE"
             end
 
             if @service
-              #output.puts "Set service: #{@service}"
-              return PryIb::Connection::connection( @service )
+              output.puts "Set service: #{@service}"
+              ib = PryIb::Connection::connection( @service )
+
+              return ib
             end
 
             # return current connection

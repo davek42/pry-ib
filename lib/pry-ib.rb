@@ -35,22 +35,62 @@ module PryIb
     @@request_id += 1
   end
 
+  def self.setup_environment
+    env = ENV['IB_ENV']
+    if env
+      env = env.downcase.to_sym
+      log "IB_ENV: #{env}"
+      case env
+      when :gateway
+        Pry.run_command "connection -g", :show_output => true
+        Pry.run_command "database -g", :show_output => true
+      when :test
+        Pry.run_command 'connection -t', :show_output => true
+        #Pry.run_command 'database -t', :show_output => true
+        # Test
+      when :live
+        Pry.run_command "connection -l", :show_output => true
+        Pry.run_command "database -l", :show_output => true
+      else
+        log "Unknown environment: #{env}"
+      end
+
+    else
+      log ">> No IB_ENV set."
+    end
+
+
+  end
+
 end
 
 
+################################################################
+# Setup
+################################################################
+
+#Pry.config.color = true
+#Pry.config.prompt = proc { "IB> " }
+#Pry.config.prompt = proc { |obj, nest_level, _| "IB: #{obj}(#{nest_level})> " }
+
+# IB connectin
+PryIb::Connection::setup
 # mongo connectin
 PryIb::Mongo::setup
 
-# Startup sanity check
-Pry.config.ib_test ||= false
-puts "Loading pry-ib 8;  ib_test:#{Pry.config.ib_test}"
-
-
-#Pry.config.prompt = proc { "IB> " }
-Pry.config.prompt = proc { |obj, nest_level, _| "IB: #{obj}(#{nest_level})> " }
-#Pry.config.color = true
-
+# commands
 Pry.config.commands.import PryIb::Commands
+
+Pry.config.prompt = proc { |obj, nest_level, _| "IB(#{PryIb::Connection::prompt_name}): #{obj}(#{nest_level})> " }
+
+# Startup sanity check
+puts "Loading pry-ib 9;   "
+
+#
+PryIb::setup_environment
+
+
+# Aliases
 Pry.config.commands.alias_command "live", "connection -l"
 Pry.config.commands.alias_command "test", "connection -t"
 Pry.config.commands.alias_command "gate", "connection -g"

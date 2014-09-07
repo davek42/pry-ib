@@ -8,7 +8,8 @@ module PryIb
      #   ib_port = 7442     # IB live port
      #   ib_port = 7496     # IB demo/test port
      #   ib_port = 4001     # gateway port
-     SERVICE_PORTS={ ib_live: 7442, ib_test: 7496, ib_gateway: 4001 }
+     SERVICE_PORTS={ ib_live: 7442,   ib_test: 7496,   ib_gateway: 4001 }
+     PROMPT_NAME = { ib_live: 'LIVE', ib_test: 'TEST', ib_gateway: 'GATE' }
      DEFAULT_OPTIONS = {  client_id: nil,
                            host:    @@host,
                            port:    SERVICE_PORTS[:ib_test],
@@ -29,6 +30,10 @@ module PryIb
         SERVICE_PORTS[:ib_test] = Pry.config.ib_test_port 
         SERVICE_PORTS[:ib_gateway] = Pry.config.ib_gateway_port 
         #log "Service Ports: #{SERVICE_PORTS.inspect}"
+      end
+
+      def self.prompt_name
+        PROMPT_NAME.fetch(@@service,'NONE')
       end
 
       def host
