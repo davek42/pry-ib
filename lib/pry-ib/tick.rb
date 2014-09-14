@@ -10,6 +10,7 @@ module PryIb
       @ib = ib
       @request_id = PryIb::next_request_id
       @tick_count = 0
+      @tick_idle_count = 0
     end
 
 #    def log(message)
@@ -21,7 +22,6 @@ module PryIb
       
       tick_type = case message.tick_type
       when 4 
-        @tick_count += 1
         "last "
       when 1  then "bid  "
       when 2  then "ask  "
@@ -33,8 +33,11 @@ module PryIb
          message.tick_type.to_s
       end
 
-      log "#{message.message_type}  T:#{tick_type}  Price: #{message.price} Size:#{message.size}"
-
+      log "[#{@tick_count}] #{message.message_type}  T:#{tick_type}  Price: #{message.price} Size:#{message.size}"
+      if tick_type == 9
+        @tick_count += 1 
+        log "---- Bump tick count: #{@tick_count}  Num: #{num_ticks} ---"
+      end
     end
 
 
@@ -56,9 +59,12 @@ module PryIb
 
       @ib.send_message :RequestMarketData, :id => @request_id, :contract => contract
 
-      #log "\nSubscribed to tick data: #{symbol}"
-      while(@tick_count < num_ticks && @tick_count < MAX_TICKS)
+#      log "\nSubscribed to tick data: #{symbol} tick_count:#{@tick_count} num:#{num_ticks} "
+      while(@tick_count < num_ticks && @tick_count < MAX_TICKS && 
+            @tick_idle_count  < (@tick_count + 3) )
+        log "---- tick count: #{@tick_count}  Num: #{num_ticks} idle:#{@tick_idle_count} ---"
         sleep 1
+        @tick_idle_count += 1
       end
       log "\n******** Tick Done: #{symbol} *********\n\n"
       @ib.send_message :CancelMarketData, :id => @request_id 
