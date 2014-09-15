@@ -17,7 +17,7 @@ module PryIb
 
     def quote(symbol,num_quotes=MAX_QUOTES)
       log "\n******** Real Quote Start: #{symbol} *********\n\n"
-      @contract =  Security.make_stock_contract(symbol)
+      @contract =  Security.get_contract(symbol)
 
       # Subscribe to TWS alerts/errors
       alert_id = @ib.subscribe(:Alert) { |msg| log msg.to_human }

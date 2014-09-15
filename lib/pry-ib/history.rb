@@ -31,7 +31,7 @@ module PryIb
 
     ###
     def quote(symbol,duration='1 D', bar_size='5 mins',stats_only=false)
-      @contract =  Security.make_stock_contract(symbol)
+      @contract =  Security.get_contract(symbol)
       log("Quote for:#{@contract.inspect} duration:#{duration} bar_size=#{bar_size}, stats_only:#{stats_only}")
       @market = { @request_id => @contract }
 

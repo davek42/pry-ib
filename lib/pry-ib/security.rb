@@ -10,14 +10,58 @@
 module PryIb
   module Security
 
+    def self.get_contract(symbol)
+      type, symbol, expiry = parse_symbol symbol
+      log "parsed: #{type} : #{symbol} : #{expiry}"
+      case type
+      when :stock
+        make_stock_contract(symbol)
+      when :future
+        make_future_contract(symbol,expiry)
+      else
+        nil
+      end
+    end
+
     def self.make_stock_contract(symbol)
       contract = IB::Contract.new(:symbol => symbol.to_s.upcase,
                         :currency => "USD",
                         :sec_type => :stock,
                         :description => "#{symbol}")
-      
+
       contract = Stocks[:gldd] if symbol == "GLDD"
       contract
+    end
+
+    def self.make_future_contract(symbol,expiry)
+      symbol = symbol.downcase.to_sym
+      contract = IB::Symbols::Futures.contracts[symbol]
+      contract.expiry = expiry if expiry
+      contract
+    end
+
+    # Parse symbol
+    # defautl is stock
+    # Format:  :type:symbol
+    # Format:  :type:symbol:expiry
+    def self.parse_symbol(symbol)
+      if symbol[0] != ':'
+        [:stock, symbol]   # assume it is stock 
+      elsif symbol =~ /:f:(\S+)/
+        sym = $1
+        if sym =~ /(\S+):(\S+)/
+          [:future,$1,$2]
+        else
+          [:future,sym]
+        end
+      elsif symbol =~ /:o:(\S+)/
+        [:option,$1]
+      elsif symbol =~ /:c:(\S+)/
+        [:currency,$1]
+      else
+        log "Error. Symbol unknown: #{symbol}"
+        [nil,nil]
+      end
     end
 
     Stocks = {

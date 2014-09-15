@@ -46,7 +46,7 @@ module PryIb
       @tick_count = 0
       log "\n******** Tick Start: #{symbol} *********\n\n"
 
-      contract =  Security.make_stock_contract(symbol)
+      contract =  Security.get_contract(symbol)
       #log("Contract: #{contract.inspect}")
 
       alert_id = @ib.subscribe(:Alert) { |msg| log "ALERT: #{msg.to_human}" }

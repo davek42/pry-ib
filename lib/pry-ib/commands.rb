@@ -148,9 +148,7 @@ module PryIb
             elsif opts.future?
               contract = PryIb::FutureContract.new(ib,symbol)
             else
-              # FIME:  assume stock
-              log "WARNING. FIXME.  Assume contract as Stock"
-              contract = PryIb::StockContract.new(ib,symbol)
+              contract = PryIb::Contract.new(ib,symbol)
             end
             output.puts "Quote: #{symbol} Type:#{contract.class.name}"
             contract.detail
@@ -216,6 +214,20 @@ module PryIb
 
         create_command "real" do
           description "Get Real Time quote"
+          banner <<-BANNER
+            Usage: real [ --num <num quotes> ] <symbol_format>
+                    #  Types:  :s - stock, :f - future, :o - option
+                    #  Expiry:  YYYYMM
+                symbol format:  <string>   # default as stock ticker
+                symbol format:  :type:ticker
+                symbol format:  :type:ticker:expriy
+            Example: 
+              real AAPL
+              real --num 200 AAPL
+              real :s:aapl      # AAPL stock
+              real :f:es        # E-mini with default set to next expiry
+              real :f:es:201409 # E-mini with expiry 2014-09
+          BANNER
           group 'pry-ib'
           def options(opt)
             opt.on :num=, 'Number of quotes. (Default: 200)'

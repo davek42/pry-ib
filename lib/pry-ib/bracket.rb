@@ -15,7 +15,7 @@ class BracketOrder
     @id = PryIb::next_request_id
     @ib = ib
     @symbol = opts[:symbol]
-    @contract =  Security.make_stock_contract(@symbol)
+    @contract =  Security.get_contract(@symbol)
     @account = opts[:account]
     @name = bracket_name
     log "Symbol: #{@symbol}  Contract: #{@contract.inspect}"

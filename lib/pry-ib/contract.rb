@@ -27,6 +27,7 @@ module PryIb
 
 
     def detail
+      @contract = PryIb::Security.get_contract( @symbol ) if @contract.nil?
 
       # Subscribe to TWS alerts/errors and contract data end marker
       @ib.subscribe(:Alert, :ContractDataEnd) { |msg| log msg.to_human }

@@ -66,7 +66,7 @@ module PryIb
 
     def alert(symbol,&test)
       log ">> Alert: #{symbol}"
-      @contract =  Security.make_stock_contract(symbol)
+      @contract =  Security.get_contract(symbol)
       log ">> contract: #{@contract}"
 
       # Subscribe to TWS alerts/errors
