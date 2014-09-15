@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe PryIb::Commands do
   before do
-    puts "-- Start Commands tests --"
+    #puts "-- Start Commands tests --"
   end
 
   describe "ibhelp" do
@@ -74,7 +74,7 @@ describe PryIb::Commands do
   describe "real" do
     it "outputs help" do
       result = pry_eval('real -h')
-      expect(result).to   match(/Get Real Time quote/)
+      expect(result).to   match(/Usage: real \[/)
     end
   end
 
