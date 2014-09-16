@@ -1,6 +1,6 @@
 # Pry::Ib
 
-This gem is a Pry plugin which provides a CLI for interacting with the Interactive Brokers
+This gem is a [Pry](http://pryrepl.org/) plugin which provides a CLI for interacting with the Interactive Brokers
 API.  It is esstially a mashup of Pry and the excellent ib-ruby gem
 which does the direct communication with Interactive Brokers API.
 Intended for creating and testing small trading automations with the Interactive
@@ -123,5 +123,6 @@ TODO: Write usage instructions here
 [IB API](https://www.interactivebrokers.com/en/index.php?f=5041)
 
 [ib-ruby project](https://github.com/ib-ruby/ib-ruby)
+[Pry](http://pryrepl.org/)
 
 
