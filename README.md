@@ -41,13 +41,20 @@ Pry.config.ib_gateway_port = 4001
 Service Ports: {:tws_live=>7442, :tws_test=>7496, :tws_gateway=>4001}
 IB: main(0)> help pry-ib
 pry-ib
-  alerts             Enable IB alerts
-  bracket            Execute Bracket order
-  connection         connection -- manage IB client connection
+  account            Get account info
+  alert              Setup an alert
+  bracket            Execute bracket order
+  chart              Get chart from stock quotes
+  connection         Connection -- manage ib client connection
+  contract           Get contract info
   order              Get order status
   quote              Get quote history
-  real               Get Real Time quote
-  tick               Get Tick quote
+  real               Get real time quote
+  scan               Run scanneer
+  subs               Enable ib alerts
+  tick               Get tick quote
+
+
 IB: main(0)>
 IB(): main(0)> connection -h
 connection -- manage IB client connection
@@ -66,6 +73,21 @@ IB(): main(0)> connection --test
 15:35:51.086 ---- Connect: tws_test. options:{:client_id=>nil, :host=>"127.0.0.1", :port=>7496, :service=>:tws_test}
 15:35:51.089 Connected to server, ver: 71, connection time: 2014-08-17 15:35:51 -0700 local, 20140817 15:35:50 PST remote.
 IB(TEST): main(0)>
+IB(TEST): main(0)> tick -h
+Get Tick quote
+        --num       Number of ticks. (Default: 2)
+    -h, --help      Show this message.
+IB(TEST): main(0)> tick fb
+07:49:35.478
+******** Tick Start: fb *********
+07:49:35.479 ---- tick count: 0  Num: 2 idle:0 ---
+07:49:35.678 [0] TickPrice  T:last   Price: 75.11 Size:5
+07:49:35.679 [0] TickPrice  T:high   Price: 75.26 Size:0
+07:49:35.680 [0] TickPrice  T:low    Price: 73.07 Size:0
+07:49:35.680 [0] TickPrice  T:close  Price: 74.58 Size:0
+07:49:35.681 [0] TickPrice  T:open   Price: 73.52 Size:0
+07:49:35.681 [0] TickPrice  T:bid    Price: 75.1 Size:23
+07:49:35.682 [0] TickPrice  T:ask    Price: 75.11 Size:4
 ```
 
 TODO: Write usage instructions here
