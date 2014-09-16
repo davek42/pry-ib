@@ -2,7 +2,12 @@
 
 This gem is a Pry plugin which provides a CLI for interacting with the Interactive Brokers
 API.  It is esstially a mashup of Pry and the excellent ib-ruby gem
-which does the direct communication with Ineractive Brokers API.
+which does the direct communication with Interactive Brokers API.
+Intended for creating and testing small trading automations with the Interactive
+Brokers API.
+
+## Version
+   Version 0.0.4 -- Pre-alpha -- definitely a work in progress
 
 ## Installation
 
@@ -38,7 +43,6 @@ Pry.config.ib_gateway_port = 4001
 
 ```
 > bundle exec pry
-Service Ports: {:tws_live=>7442, :tws_test=>7496, :tws_gateway=>4001}
 IB: main(0)> help pry-ib
 pry-ib
   account            Get account info
@@ -72,7 +76,7 @@ IB(): main(0)>
 IB(): main(0)> connection --test
 15:35:51.086 ---- Connect: tws_test. options:{:client_id=>nil, :host=>"127.0.0.1", :port=>7496, :service=>:tws_test}
 15:35:51.089 Connected to server, ver: 71, connection time: 2014-08-17 15:35:51 -0700 local, 20140817 15:35:50 PST remote.
-IB(TEST): main(0)>
+
 IB(TEST): main(0)> tick -h
 Get Tick quote
         --num       Number of ticks. (Default: 2)
@@ -80,7 +84,7 @@ Get Tick quote
 IB(TEST): main(0)> tick fb
 07:49:35.478
 ******** Tick Start: fb *********
-07:49:35.479 ---- tick count: 0  Num: 2 idle:0 ---
+07:49:35.479 ---- tick count: 0 ---- 
 07:49:35.678 [0] TickPrice  T:last   Price: 75.11 Size:5
 07:49:35.679 [0] TickPrice  T:high   Price: 75.26 Size:0
 07:49:35.680 [0] TickPrice  T:low    Price: 73.07 Size:0
@@ -88,6 +92,19 @@ IB(TEST): main(0)> tick fb
 07:49:35.681 [0] TickPrice  T:open   Price: 73.52 Size:0
 07:49:35.681 [0] TickPrice  T:bid    Price: 75.1 Size:23
 07:49:35.682 [0] TickPrice  T:ask    Price: 75.11 Size:4
+
+IB(LIVE): main(0)> alert -h
+Usage: alert symbol | { |bar| bar.close > 42 }
+Example:
+  alert aapl | { |bar| bar.close > 42 }
+  
+        --name       set alert name
+    -l, --list       list alerts
+    -s, --sound      Use audio alert
+    -h, --help       Show this message.
+IB(LIVE): main(0)>
+IB(LIVE): main(0)> alert AAPL | {|bar| bar.close > 142 }
+
 ```
 
 TODO: Write usage instructions here
