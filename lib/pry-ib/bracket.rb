@@ -40,11 +40,13 @@ class BracketOrder
     end
   end
 
-  def setup( quantity, order_price, stop_price, profit_price, parent_order_type, direction = :long )
+  def setup( quantity, order_price, stop_price, profit_price, parent_order_type, tif='DAY', direction = :long )
     raise "No symbol" if @symbol.nil? || @symbol.empty?
     raise "got bad order quanity" if quantity.nil? or quantity <= 0
     raise "Got bad order price"  if order_price.nil? or order_price <= 0
     raise "Bad order type: #{parent_order_type}"  unless ['LMT','STP','MKT'].include?(parent_order_type)
+    raise "Bad order type: #{parent_order_type}"  unless %w{LMT STP MKT}.include?(parent_order_type)
+    raise "Bad time in force: #{tif}" unless %w{DAY GAT GTD GTC IOC}.include?(tif)
     
 
     @order_price = order_price
@@ -78,6 +80,7 @@ class BracketOrder
                               :limit_price => order_price,
                               :action => parent_action,
                               :order_type => parent_order_type, # LMT, STP, MKT
+                              :tif => tif,
                               :algo_strategy => '',
                               :account => @account,
                               :transmit => false
@@ -88,6 +91,7 @@ class BracketOrder
                               :aux_price => order_price,
                               :action => parent_action,
                               :order_type => parent_order_type, # LMT, STP, MKT
+                              :tif => tif,
                               :algo_strategy => '',
                               :account => @account,
                               :transmit => false
@@ -103,6 +107,7 @@ class BracketOrder
                               :aux_price => stop_price,
                               :action => child_action,
                               :order_type => 'STP',
+                              :tif => tif,
                               :parent_id => @parent_order.local_id,
                               :account => @account,
                               :transmit => true
@@ -114,6 +119,7 @@ class BracketOrder
                                 :limit_price => profit_price,
                                 :action => child_action,
                                 :order_type => 'LMT',
+                                :tif => tif,
                                 :parent_id => @parent_order.local_id,
                                 :account => @account,
                                 :transmit => true
@@ -123,6 +129,7 @@ class BracketOrder
                                 :limit_price => 0,
                                 :action => child_action,
                                 :order_type => 'MOC',
+                                :tif => tif,
                                 :parent_id => @parent_order.local_id,
                                 :account => @account,
                                 :transmit => true

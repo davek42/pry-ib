@@ -326,7 +326,7 @@ module PryIb
         create_command "bracket" do
           description 'Execute Bracket order'
           banner <<-BANNER
-            Usage: bracket [ --quantiy <amount> ] [ --price <entry price> ] [ --stop <stop price> ][ --profit <profit price> ] [ --type <order type>] [ -l | -s ] [ --account <code> ] <symbol>
+            Usage: bracket [ --quantiy <amount> ] [ --price <entry price> ] [ --stop <stop price> ][ --profit <profit price> ] [ --type <order type>] [--tif <tif code>] [ -l | -s ] [ --account <code> ] <symbol>
             Example: 
               bracket --quantity 200 --price 42.10 --stop 40.00 --profit 44.00 -l -type LMT AAPL
               bracket  --price 100.36 --stop 100.05 --profit 100.50 --account U96711   AAPL
@@ -343,6 +343,7 @@ module PryIb
             @profit_price = nil
             @order_type = 'LMT'
             @direction = :long
+            @tif = 'DAY'
 
           end
 
@@ -353,6 +354,7 @@ module PryIb
             opt.on :profit=,  'set profit target price'
             opt.on :type=,    'set order type  (MKT, LMT, STP) default LMT'
             opt.on :account=, 'set account'
+            opt.on :tif=,     'set time in force (DAY,GAT,GTD,GTC,IOC)'
             opt.on :s,:short, 'use short direction'
             opt.on :l,:long,  'use long direction'
             opt.on :c,:create,  'Create bracket order but do not execute'
@@ -400,11 +402,17 @@ module PryIb
               @account = opts[:account]
               output.puts "Set account: #{@account}"
             end
+            if opts.tif?
+              @tif = opts[:tif].upcase
+              output.puts "Set tif: #{@tif}"
+            end
+            @direction = :long if opts.long?
+            @direction = :short if opts.short?
 
 
             @bracket = PryIb::BracketOrder.new(ib,:symbol => symbol, :account => @account)
             @bracket.setup( @quantity, @order_price, @stop_price,
-                             @profit_price, @order_type, @direction )
+                             @profit_price, @order_type, @tif, @direction )
 
             @bracket.send_order unless opts.create?
 
