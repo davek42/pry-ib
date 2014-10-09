@@ -2,6 +2,9 @@
 #
 require 'ib-ruby'
 
+# BracketOrder -- place order with corresponding stop and profit orders
+#
+#   See also: https://www.interactivebrokers.com/en/software/webtraderguide/webtrader/orders/supported_order_types.htm
 module PryIb
 class BracketOrder
   attr_accessor :id, :ib, :order_price,:stop_price, :profit_price, :contract, :name

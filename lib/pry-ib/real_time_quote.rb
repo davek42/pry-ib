@@ -34,7 +34,8 @@ module PryIb
           id  = msg.request_id
           dt = Date.epoch_to_datetime( bar.time )
 
-          log ">>ID:#{id} - #{symbol} - Bar. #{bar.close} hour:#{dt.hour} min:#{dt.min} sec:#{dt.sec}"
+          #log ">>ID:#{id} - #{symbol} - Bar. #{bar.close} hour:#{dt.hour} min:#{dt.min} sec:#{dt.sec}"
+          log ">>ID:#{id} - #{symbol} - Bar. #{bar.close} Vol:#{bar.volume} | hour:#{dt.hour} min:#{dt.min} sec:#{dt.sec}"
         end
       end
 

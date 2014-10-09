@@ -13,6 +13,7 @@ require_relative 'pry-ib/chart'
 require_relative 'pry-ib/order'
 require_relative 'pry-ib/bracket'
 require_relative 'pry-ib/real_time_quote'
+require_relative 'pry-ib/real_time_stat'
 require_relative 'pry-ib/scanner'
 require_relative 'pry-ib/util/time_util'
 
@@ -57,5 +58,6 @@ Pry.config.commands.alias_command "h5",   "hist -T 5"
 Pry.config.commands.alias_command "h10",  "hist -T 10"
 Pry.config.commands.alias_command "h20",  "hist -T 20"
 Pry.config.commands.alias_command "h50",  "hist -T 50"
-Pry.config.commands.alias_command "bb", 'bracket #{@symbol}  --price #{@price} --stop #{@stop} --profit #{@profit} --quantity #{@quantity} --account #{@account} --tif #{@tif}'
+Pry.config.commands.alias_command "bbb", 'bracket #{@symbol}  --price #{@price} --stop #{@stop} --profit #{@profit} --quantity #{@quantity} --account #{@account} --tif #{@tif}'
+Pry.config.commands.alias_command "sss", 'bracket #{@symbol}  --price #{@price} --stop #{@stop} --profit #{@profit} --quantity #{@quantity} --account #{@account} --tif #{@tif} --short'
 
