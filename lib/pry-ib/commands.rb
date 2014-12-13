@@ -266,6 +266,7 @@ module PryIb
           group 'pry-ib'
           def options(opt)
             opt.on :atr=, 'Get ATR with period', as: Array, delimiter: ','
+            opt.on :mfi=, 'Get MFI with period', as: Array, delimiter: ','
             opt.on :num=, 'Number of quotes. (Default: 200)'
             opt.on :bs=,  'Bar size  (Default: 5)'
             opt.on :min,  'Bar size  60 seconds'
@@ -287,6 +288,7 @@ module PryIb
             @bar_size = opts[:bs].to_i if opts.bs?
             @num_quotes = opts[:num].to_i if opts.num?
             @parms[:atr] = opts[:atr].map!(&:to_i) if opts.atr?
+            @parms[:mfi] = opts[:mfi].map!(&:to_i) if opts.mfi?
             @parms[:bar_size] = @bar_size
 
             ib = PryIb::Connection::current
