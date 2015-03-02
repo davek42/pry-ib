@@ -60,7 +60,7 @@ module PryIb
         port = SERVICE_PORTS[@@service]
         options[:port] = port
         
-        if options[:service] == :ib_live
+        if @@service == :ib_live
           log "************************************"
           log "**** GO LIVE !!!"
           log "************************************"
@@ -92,6 +92,15 @@ module PryIb
         end
 
       end
+
+
+     def self.reconnect
+       if @@conn
+         @@conn.close
+         @@conn = nil
+         connection(@@service)
+       end
+     end
 
       def self.subscribers
        if @@conn.nil?

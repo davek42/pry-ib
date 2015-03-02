@@ -486,6 +486,7 @@ module PryIb
           def options(opt)
             opt.on :s, :show, "show services"
             opt.on :c, :close, "close current connection"
+            opt.on :r, :reconnect, "reconnect connection"
             opt.on :o, :host, "host"
             opt.on :b, :subs, "subscribers"
             opt.on :u, :unsub=, "unsubscribe id"
@@ -517,6 +518,14 @@ module PryIb
               PryIb::Connection::close
               return
             end
+            if opts.reconnect?
+              output.puts "--->"
+              output.puts "Reconnect: #{PryIb::Connection::service}"
+              set_prompt ""
+              PryIb::Connection::reconnect
+              return
+            end
+
             if opts.subs?
               output.puts "--->"
               PryIb::Connection::subscribers
