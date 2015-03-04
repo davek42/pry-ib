@@ -521,8 +521,9 @@ module PryIb
             if opts.reconnect?
               output.puts "--->"
               output.puts "Reconnect: #{PryIb::Connection::service}"
-              set_prompt ""
+              set_prompt "reconnecting"
               PryIb::Connection::reconnect
+              set_prompt "#{PryIb::Connection::current_name}"
               return
             end
 
@@ -545,13 +546,13 @@ module PryIb
             elsif opts.live?
               output.puts "Live service "
               @service = :ib_live
-              set_prompt "LIVE"
+              set_prompt "#{PryIb::Connection::current_name(@service)}"
             elsif opts.test? || opts.test?
               @service = :ib_test
-              set_prompt "TEST"
+              set_prompt "#{PryIb::Connection::current_name(@service)}"
             elsif opts.gateway?
               @service = :ib_gateway
-              set_prompt "GATE"
+              set_prompt "#{PryIb::Connection::current_name(@service)}"
             end
 
             if @service

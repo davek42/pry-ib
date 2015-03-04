@@ -9,6 +9,7 @@ module PryIb
      #   ib_port = 7496     # IB demo/test port
      #   ib_port = 4001     # gateway port
      SERVICE_PORTS={ ib_live: 7442, ib_test: 7496, ib_gateway: 4001 }
+     SERVICE_NAMES={ ib_live: 'LIVE', ib_test: 'TEST', ib_gateway: 'GATE' }
      DEFAULT_OPTIONS = {  client_id: nil,
                            host:    @@host,
                            port:    SERVICE_PORTS[:ib_test],
@@ -44,7 +45,12 @@ module PryIb
         connection(@@service)
       end
 
-      def self.connection(service)
+      def self.current_name(id=nil)
+        id ||= @@service
+        SERVICE_NAMES.fetch(id,'UNKNOWN')
+      end
+
+     def self.connection(service)
         return @@conn unless @@conn.nil?
         @@conn = make_connection( :service => service )
       end
@@ -96,9 +102,13 @@ module PryIb
 
      def self.reconnect
        if @@conn
+         log "Reconnecting... attempt close"
          @@conn.close
          @@conn = nil
+         log "Reconnecting... attempt connect:#{@@service.inspect}"
          connection(@@service)
+         log "Reconnecting... connected. #{@@service.inspect}"
+         @@conn
        end
      end
 
