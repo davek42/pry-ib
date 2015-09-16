@@ -71,6 +71,14 @@ describe PryIb::Commands do
       expect(result).to   match(/Get Tick quote/)
     end
   end
+
+  describe "stat" do
+    it "outputs help" do
+      result = pry_eval('stat -h')
+      puts ">> stat result:#{result.inspect}"
+      expect(result).to   match(/Get Real Time Stats/)
+    end
+  end
   describe "real" do
     it "outputs help" do
       result = pry_eval('real -h')

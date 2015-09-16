@@ -41,7 +41,6 @@ module PryIb
     end
 
 
-
     def tick(symbol, num_ticks=2)
       @tick_count = 0
       log "\n******** Tick Start: #{symbol} *********\n\n"
